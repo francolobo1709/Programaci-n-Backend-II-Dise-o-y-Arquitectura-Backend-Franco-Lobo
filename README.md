@@ -238,4 +238,5 @@ Las validaciones se aplican como middlewares en la capa de rutas antes de llegar
   "details": "price: price debe ser mayor a 0 | available: available debe ser true o false."
 }
 ```
-
+#   P r o g r a m a c i - n - B a c k e n d - I I - D i s e - o - y - A r q u i t e c t u r a - B a c k e n d - F r a n c o - L o b o  
+ 
