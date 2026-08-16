@@ -238,5 +238,52 @@ Las validaciones se aplican como middlewares en la capa de rutas antes de llegar
   "details": "price: price debe ser mayor a 0 | available: available debe ser true o false."
 }
 ```
-#   P r o g r a m a c i - n - B a c k e n d - I I - D i s e - o - y - A r q u i t e c t u r a - B a c k e n d - F r a n c o - L o b o  
- 
+
+---
+
+### Sessions — `/api/sessions`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/api/sessions/register` | Registro seguro de usuarios |
+
+#### Body `POST /api/sessions/register`
+
+```json
+{
+  "first_name": "Ana",
+  "last_name": "Pérez",
+  "email": "Ana@Mail.com",
+  "password": "Secreta123"
+}
+```
+
+**Respuesta 201 (Éxito):**
+```json
+{
+  "status": "success",
+  "payload": {
+    "id": "665f2a...",
+    "first_name": "Ana",
+    "last_name": "Pérez",
+    "email": "ana@mail.com",
+    "role": "user"
+  }
+}
+```
+
+**Respuesta 400 (Faltan campos o son inválidos):**
+```json
+{
+  "status": "error",
+  "message": "Faltan campos obligatorios"
+}
+```
+
+**Respuesta 409 (Email ya registrado):**
+```json
+{
+  "status": "error",
+  "message": "El email ya está registrado"
+}
+```

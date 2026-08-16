@@ -9,10 +9,7 @@
 export const validate = (schema) => (req, res, next) => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
-        const details = result.error.errors
-            .map((e) => (e.path.length ? `${e.path.join('.')}: ${e.message}` : e.message))
-            .join(' | ');
-        return res.status(400).json({ error: 'Datos inválidos.', details });
+        return res.status(400).json({ status: 'error', message: 'Faltan campos obligatorios' });
     }
     req.body = result.data;
     next();

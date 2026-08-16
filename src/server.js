@@ -1,4 +1,9 @@
 import { createServer } from 'node:http';
+import dns from 'node:dns';
+
+// Forzar el uso de los DNS de Google para evitar bloqueos de red con MongoDB Atlas
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 import { app } from './app.js';
 import { config } from './config/env.config.js';
 import { connectDB } from './database/connection.js';
