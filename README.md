@@ -32,6 +32,7 @@ cp .env.example .env
 | `PORT`      | Puerto del servidor               | ✅        | `8080`                          |
 | `NODE_ENV`  | Entorno de ejecución              | ✅        | `development`                   |
 | `MONGO_URI` | URI de conexión a MongoDB Atlas   | ✅ | `mongodb+srv://...` |
+| `JWT_SECRET`| Secreto para firmar tokens JWT    | ✅ | `super_secret_key`              |
 
 ## Ejecución
 
@@ -246,6 +247,9 @@ Las validaciones se aplican como middlewares en la capa de rutas antes de llegar
 | Método | Ruta | Descripción |
 |---|---|---|
 | `POST` | `/api/sessions/register` | Registro seguro de usuarios |
+| `POST` | `/api/sessions/login`    | Login e inicio de sesión (Devuelve cookie JWT) |
+| `GET`  | `/api/sessions/current`  | Obtiene los datos del usuario logueado |
+| `POST` | `/api/sessions/logout`   | Cierra la sesión (Limpia la cookie) |
 
 #### Body `POST /api/sessions/register`
 

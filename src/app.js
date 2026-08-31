@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { engine } from 'express-handlebars';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -31,8 +32,9 @@ app.set('views', join(__dirname, 'views'));
 // ── Static files ─────────────────────────────────────────────────────────────
 app.use(express.static(join(__dirname, '..', 'public')));
 
-// ── Body parser ───────────────────────────────────────────────────────────────
+// ── Body parser & Cookies ───────────────────────────────────────────────────────────────
 app.use(express.json());
+app.use(cookieParser());
 
 // ── API root ──────────────────────────────────────────────────────────────────
 app.get('/', (_req, res) => {

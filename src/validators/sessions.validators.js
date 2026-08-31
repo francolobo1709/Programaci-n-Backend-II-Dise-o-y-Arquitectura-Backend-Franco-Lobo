@@ -21,3 +21,15 @@ export const registerSchema = z.object({
         invalid_type_error: 'password debe ser un texto',
     }).min(6, 'password debe tener al menos 6 caracteres'),
 });
+
+export const loginSchema = z.object({
+    email: z.string({
+        required_error: 'email es obligatorio',
+        invalid_type_error: 'email debe ser un texto',
+    }).email('Formato de email inválido'),
+
+    password: z.string({
+        required_error: 'password es obligatorio',
+        invalid_type_error: 'password debe ser un texto',
+    }),
+});
