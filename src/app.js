@@ -9,6 +9,8 @@ import messagesRouter from './routes/messages.router.js';
 import viewsRouter from './routes/views.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import passport from 'passport';
+import { initializePassport } from './config/passport.config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -35,6 +37,8 @@ app.use(express.static(join(__dirname, '..', 'public')));
 // ── Body parser & Cookies ───────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
+initializePassport();
+app.use(passport.initialize());
 
 // ── API root ──────────────────────────────────────────────────────────────────
 app.get('/', (_req, res) => {

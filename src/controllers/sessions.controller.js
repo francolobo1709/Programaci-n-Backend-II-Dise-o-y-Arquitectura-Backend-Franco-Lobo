@@ -1,14 +1,11 @@
-import { SessionsService } from '../services/sessions.service.js';
 import { generateToken } from '../utils/jwt.utils.js';
 
 export class SessionsController {
     static async register(req, res, next) {
         try {
-            const userPayload = await SessionsService.registerUser(req.body);
-
             res.status(201).json({
                 status: 'success',
-                payload: userPayload
+                payload: req.user
             });
         } catch (error) {
             next(error);
@@ -17,19 +14,18 @@ export class SessionsController {
 
     static async login(req, res, next) {
         try {
-            const { email, password } = req.body;
-            const userPayload = await SessionsService.loginUser(email, password);
+            const userPayload = req.user;
 
             const token = generateToken(userPayload);
 
-            res.cookie('auth_cookie', token, {
+            res.cookie('currentUser', token, {
                 httpOnly: true,
                 maxAge: 3600000 // 1 hora
             });
 
             res.status(200).json({
                 status: 'success',
-                message: 'Login exitoso'
+                message: 'Login correcto'
             });
         } catch (error) {
             next(error);
@@ -49,7 +45,7 @@ export class SessionsController {
 
     static async logout(req, res, next) {
         try {
-            res.clearCookie('auth_cookie');
+            res.clearCookie('currentUser');
             res.status(200).json({
                 status: 'success',
                 message: 'Logout exitoso'

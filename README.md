@@ -242,14 +242,21 @@ Las validaciones se aplican como middlewares en la capa de rutas antes de llegar
 
 ---
 
-### Sessions — `/api/sessions`
+### Sessions — `/api/sessions` (Autenticación con Passport.js)
+
+El sistema de autenticación está centralizado utilizando **Passport.js**, lo que permite una validación robusta y deja la aplicación preparada para sumar proveedores externos (Google, GitHub, etc.) sin modificar el archivo principal `app.js`.
+
+**Estrategias Implementadas:**
+- **`register` (LocalStrategy):** Valida datos, verifica que el email sea único, hashea la contraseña y asigna el rol `user` por defecto.
+- **`login` (LocalStrategy):** Verifica credenciales comparando la contraseña con bcrypt. Si es exitoso, delega al controlador la generación del JWT.
+- **`current` (JWTStrategy):** Extrae el token JWT desde la cookie `currentUser` (HttpOnly), lo valida y devuelve los datos seguros del usuario autenticado.
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `POST` | `/api/sessions/register` | Registro seguro de usuarios |
-| `POST` | `/api/sessions/login`    | Login e inicio de sesión (Devuelve cookie JWT) |
-| `GET`  | `/api/sessions/current`  | Obtiene los datos del usuario logueado |
-| `POST` | `/api/sessions/logout`   | Cierra la sesión (Limpia la cookie) |
+| `POST` | `/api/sessions/register` | Registro seguro de usuarios (Passport `register`) |
+| `POST` | `/api/sessions/login`    | Login e inicio de sesión (Passport `login`, devuelve cookie JWT `currentUser`) |
+| `GET`  | `/api/sessions/current`  | Obtiene datos del usuario logueado (Passport `current`) |
+| `POST` | `/api/sessions/logout`   | Cierra la sesión (Limpia la cookie `currentUser`) |
 
 #### Body `POST /api/sessions/register`
 

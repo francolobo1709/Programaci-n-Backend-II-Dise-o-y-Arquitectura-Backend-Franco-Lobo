@@ -1,17 +1,45 @@
 import { bookingRepository } from '../repositories/bookings.repository.js';
 import { serviceRepository } from '../repositories/services.repository.js';
+import { NotFoundError } from '../errors/AppError.js';
+import { assertValidId } from '../repositories/repository.utils.js';
 
 export const bookingService = {
-    getAll:  () => bookingRepository.getAll(),
-    getById: (id) => bookingRepository.getById(id),
-    create:  (data) => bookingRepository.create(data),
-    update:  (id, data) => bookingRepository.update(id, data),
-    remove:  (id) => bookingRepository.remove(id),
+    async getAll() {
+        return bookingRepository.getAll();
+    },
+
+    async getById(id) {
+        assertValidId(id);
+        const booking = await bookingRepository.getById(id);
+        if (!booking) throw new NotFoundError(id, 'Reserva');
+        return booking;
+    },
+
+    async create(data) {
+        return bookingRepository.create(data);
+    },
+
+    async update(id, data) {
+        assertValidId(id);
+        const updated = await bookingRepository.update(id, data);
+        if (!updated) throw new NotFoundError(id, 'Reserva');
+        return updated;
+    },
+
+    async remove(id) {
+        assertValidId(id);
+        const deleted = await bookingRepository.remove(id);
+        if (!deleted) throw new NotFoundError(id, 'Reserva');
+        return deleted;
+    },
 
     async addService(bookingId, serviceId, quantity = 1) {
+        assertValidId(bookingId);
+        assertValidId(serviceId);
+
         await serviceRepository.getById(serviceId);
 
-        const booking = await bookingRepository.getById(bookingId);
+        const booking = await bookingService.getById(bookingId);
 
         // Compara como string para soportar ObjectId populado o sin popularfar
         const existing = booking.services.find(
@@ -19,19 +47,32 @@ export const bookingService = {
         );
 
         if (existing) {
-            return bookingRepository.updateServiceQuantity(
+            const updated = await bookingRepository.updateServiceQuantity(
                 bookingId,
                 serviceId,
                 existing.quantity + quantity
             );
+            if (!updated) throw new NotFoundError(bookingId, 'Reserva');
+            return updated;
         }
 
-        return bookingRepository.addService(bookingId, serviceId, quantity);
+        const updated = await bookingRepository.addService(bookingId, serviceId, quantity);
+        if (!updated) throw new NotFoundError(bookingId, 'Reserva');
+        return updated;
     },
 
-    removeService: (bookingId, serviceId) =>
-        bookingRepository.removeService(bookingId, serviceId),
+    async removeService(bookingId, serviceId) {
+        assertValidId(bookingId);
+        assertValidId(serviceId);
+        const updated = await bookingRepository.removeService(bookingId, serviceId);
+        if (!updated) throw new NotFoundError(bookingId, 'Reserva');
+        return updated;
+    },
 
-    clearServices: (bookingId) =>
-        bookingRepository.clearServices(bookingId),
+    async clearServices(bookingId) {
+        assertValidId(bookingId);
+        const updated = await bookingRepository.clearServices(bookingId);
+        if (!updated) throw new NotFoundError(bookingId, 'Reserva');
+        return updated;
+    },
 };

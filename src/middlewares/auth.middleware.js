@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/env.config.js';
 
 export const requireAuth = (req, res, next) => {
-    const token = req.cookies.auth_cookie;
+    const token = req.cookies.currentUser;
 
     if (!token) {
         return res.status(401).json({ error: 'No autorizado. Token no proporcionado.' });
