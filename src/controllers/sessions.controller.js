@@ -1,4 +1,5 @@
 import { generateToken } from '../utils/jwt.utils.js';
+import { UsersRepository } from '../repositories/users.repository.js';
 
 export class SessionsController {
     static async register(req, res, next) {
@@ -49,6 +50,18 @@ export class SessionsController {
             res.status(200).json({
                 status: 'success',
                 message: 'Logout exitoso'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getAllUsers(req, res, next) {
+        try {
+            const users = await UsersRepository.findAll();
+            res.status(200).json({
+                status: 'success',
+                payload: users
             });
         } catch (error) {
             next(error);

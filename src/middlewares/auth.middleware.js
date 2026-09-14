@@ -1,18 +1,12 @@
-import jwt from 'jsonwebtoken';
-import { config } from '../config/env.config.js';
+import passport from 'passport';
 
 export const requireAuth = (req, res, next) => {
-    const token = req.cookies.currentUser;
-
-    if (!token) {
-        return res.status(401).json({ error: 'No autorizado. Token no proporcionado.' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, config.jwtSecret);
-        req.user = decoded; // Adjuntar payload al request
+    passport.authenticate('current', { session: false }, (err, user, info) => {
+        if (err) return next(err);
+        if (!user) {
+            return res.status(401).json({ status: 'error', message: 'No autenticado' });
+        }
+        req.user = user;
         next();
-    } catch (error) {
-        return res.status(401).json({ error: 'No autorizado. Token inválido o expirado.' });
-    }
+    })(req, res, next);
 };

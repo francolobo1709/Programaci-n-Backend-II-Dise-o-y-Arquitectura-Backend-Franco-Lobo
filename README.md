@@ -242,6 +242,37 @@ Las validaciones se aplican como middlewares en la capa de rutas antes de llegar
 
 ---
 
+### Autorización y Roles (Pre-entrega 5)
+
+El sistema cuenta con autorización basada en roles (RBAC). 
+
+**Roles Disponibles:**
+- `user`: Cliente estándar. Solo puede consultar servicios.
+- `organizer`: Proveedor de servicios. Puede crear servicios y modificar/eliminar únicamente aquellos que haya creado.
+- `admin`: Administrador de la plataforma. Puede modificar o eliminar cualquier servicio y visualizar la lista de usuarios.
+
+**Matriz de Permisos (`/api/services`):**
+
+| Acción | `user` | `organizer` | `admin` |
+|--------|--------|-------------|---------|
+| Consultar servicios publicados | ✅ | ✅ | ✅ |
+| Crear servicios (`POST /`) | ❌ | ✅ | ✅ |
+| Modificar/cancelar servicios propios (`PUT/DELETE /:sid`) | ❌ | ✅ | ✅ |
+| Modificar cualquier servicio ajeno | ❌ | ❌ | ✅ |
+
+**Rutas Protegidas:**
+- `GET /api/sessions/current`: Solo usuarios autenticados (cualquier rol). Devuelve `401` si no hay sesión.
+- `GET /api/sessions/users`: Ruta administrativa. Solo `admin`. Devuelve `403` si otro rol intenta acceder.
+- `POST /api/services`: Solo `organizer` o `admin`.
+- `PUT /api/services/:sid`: Solo el `organizer` dueño del servicio o un `admin`.
+- `DELETE /api/services/:sid`: Solo el `organizer` dueño del servicio o un `admin`.
+
+**Diferencia entre Códigos de Error HTTP:**
+- **401 Unauthorized:** Ocurre cuando el usuario **no está autenticado** (no hay sesión activa, o el token JWT es inválido o no se proporcionó).
+- **403 Forbidden:** Ocurre cuando el usuario está autenticado correctamente, pero **no tiene los permisos suficientes** (su rol no le permite realizar la acción solicitada, o está intentando modificar un recurso que no le pertenece).
+
+---
+
 ### Sessions — `/api/sessions` (Autenticación con Passport.js)
 
 El sistema de autenticación está centralizado utilizando **Passport.js**, lo que permite una validación robusta y deja la aplicación preparada para sumar proveedores externos (Google, GitHub, etc.) sin modificar el archivo principal `app.js`.
@@ -298,3 +329,4 @@ El sistema de autenticación está centralizado utilizando **Passport.js**, lo q
   "message": "El email ya está registrado"
 }
 ```
+

@@ -17,4 +17,12 @@ export class UsersRepository {
             throw new AppError('Error al buscar usuario en la base de datos', 500, error.message);
         }
     }
+
+    static async findAll() {
+        try {
+            return await UsersDao.findAll();
+        } catch (error) {
+            throw new AppError('Error al obtener usuarios', 500, error.message);
+        }
+    }
 }

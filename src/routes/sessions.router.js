@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { SessionsController } from '../controllers/sessions.controller.js';
 import { validate } from '../middlewares/validate.js';
 import { registerSchema, loginSchema } from '../validators/sessions.validators.js';
+import { requireAuth } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/authorize.middleware.js';
 import passport from 'passport';
 
 const router = Router();
@@ -30,18 +32,6 @@ const authenticateLogin = (req, res, next) => {
     })(req, res, next);
 };
 
-// Custom callback for current to handle unauthorized
-const authenticateCurrent = (req, res, next) => {
-    passport.authenticate('current', { session: false }, (err, user, info) => {
-        if (err) return next(err);
-        if (!user) {
-            return res.status(401).json({ error: 'No autorizado. Token no proporcionado o inválido.' });
-        }
-        req.user = user;
-        next();
-    })(req, res, next);
-};
-
 // POST /api/sessions/register
 router.post('/register', validate(registerSchema), authenticateRegister, SessionsController.register);
 
@@ -49,9 +39,12 @@ router.post('/register', validate(registerSchema), authenticateRegister, Session
 router.post('/login', validate(loginSchema), authenticateLogin, SessionsController.login);
 
 // GET /api/sessions/current
-router.get('/current', authenticateCurrent, SessionsController.current);
+router.get('/current', requireAuth, SessionsController.current);
 
 // POST /api/sessions/logout
-router.post('/logout', authenticateCurrent, SessionsController.logout);
+router.post('/logout', requireAuth, SessionsController.logout);
+
+// GET /api/sessions/users
+router.get('/users', requireAuth, authorize(['admin']), SessionsController.getAllUsers);
 
 export default router;

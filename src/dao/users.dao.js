@@ -19,4 +19,12 @@ export class UsersDao {
     static async findByEmail(email) {
         return await UserModel.findOne({ email });
     }
+
+    /**
+     * Devuelve todos los usuarios (sin contraseñas).
+     * @returns {Array} Lista de usuarios.
+     */
+    static async findAll() {
+        return await UserModel.find({}, { password: 0 });
+    }
 }

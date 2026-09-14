@@ -8,6 +8,7 @@ const serviceSchema = new mongoose.Schema(
         price:       { type: Number, required: true, min: 0.01 },
         category:    { type: String, required: true, trim: true, lowercase: true },
         available:   { type: Boolean, required: true, default: true },
+        organizer:   { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     },
     { timestamps: true }
 );
