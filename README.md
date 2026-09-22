@@ -330,3 +330,42 @@ El sistema de autenticación está centralizado utilizando **Passport.js**, lo q
 }
 ```
 
+---
+
+### Events — `/api/events`
+
+Entidad principal para la gestión de eventos.
+
+| Método   | Ruta                        | Acceso                 | Descripción                               |
+|----------|-----------------------------|------------------------|-------------------------------------------|
+| `GET`    | `/api/events`               | Público                | Listar eventos (filtros, paginación)      |
+| `GET`    | `/api/events/:id`           | Público                | Obtener evento por ID                     |
+| `POST`   | `/api/events`               | `organizer`, `admin`   | Crear un evento                           |
+| `PUT`    | `/api/events/:id`           | Dueño o `admin`        | Actualizar un evento                      |
+| `PATCH`  | `/api/events/:id/status`    | Dueño o `admin`        | Cambiar estado de un evento               |
+
+#### Reglas de Negocio (Events)
+
+- No se permiten fechas pasadas al crear o actualizar un evento.
+- La capacidad debe ser mayor a `0` y el precio mayor o igual a `0`.
+- El campo `organizer` se asigna automáticamente mediante el token JWT.
+- Los organizadores solo pueden modificar o cambiar el estado de sus propios eventos (los admins pueden modificar cualquiera).
+- Un evento en estado `cancelled` **no** puede ser modificado.
+- Un evento en estado `finished` o `cancelled` **no** puede ser publicado nuevamente.
+
+#### Filtros y Paginación — `GET /api/events`
+
+| Query param | Descripción                                  | Ejemplo                              |
+|-------------|----------------------------------------------|--------------------------------------|
+| `status`    | Filtrar por estado (`draft`, `published`...) | `?status=published`                  |
+| `category`  | Filtrar por categoría                        | `?category=workshop`                 |
+| `location`  | Filtrar por ubicación (parcial)              | `?location=Buenos`                   |
+| `dateFrom`  | Filtrar eventos desde una fecha              | `?dateFrom=2024-01-01`               |
+| `dateTo`    | Filtrar eventos hasta una fecha              | `?dateTo=2024-12-31`                 |
+| `page`      | Número de página (default: 1)                | `?page=2`                            |
+| `limit`     | Cantidad por página (default: 10)            | `?limit=5`                           |
+| `sort`      | Campo para ordenar                           | `?sort=date`                         |
+
+**Ejemplo de Petición:** `GET /api/events?status=published&category=workshop&page=2&limit=5`
+
+
