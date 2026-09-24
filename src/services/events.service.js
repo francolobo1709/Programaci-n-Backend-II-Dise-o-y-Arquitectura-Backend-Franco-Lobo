@@ -1,20 +1,19 @@
 import { eventsRepository } from '../repositories/events.repository.js';
-import { CustomError } from '../errors/CustomError.js';
-import { ErrorCodes } from '../errors/errorCodes.js';
+import { AppError, ValidationError, NotFoundError } from '../errors/AppError.js';
 
 class EventsService {
     async createEvent(eventData, user) {
         const eventDate = new Date(eventData.date);
         if (eventDate <= new Date()) {
-            throw new CustomError('No se puede crear un evento en una fecha pasada', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('No se puede crear un evento en una fecha pasada');
         }
 
         if (eventData.capacity <= 0) {
-            throw new CustomError('La capacidad debe ser mayor a 0', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('La capacidad debe ser mayor a 0');
         }
 
         if (eventData.price < 0) {
-            throw new CustomError('El precio no puede ser negativo', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('El precio no puede ser negativo');
         }
 
         // Se asigna automáticamente el organizador
@@ -57,7 +56,7 @@ class EventsService {
     async getEventById(id) {
         const event = await eventsRepository.getEventById(id);
         if (!event) {
-            throw new CustomError('Evento no encontrado', ErrorCodes.NOT_FOUND, 404);
+            throw new NotFoundError(id, 'Evento');
         }
         return event;
     }
@@ -66,27 +65,27 @@ class EventsService {
         const event = await this.getEventById(id);
 
         if (event.status === 'cancelled') {
-            throw new CustomError('No se puede modificar un evento cancelado', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('No se puede modificar un evento cancelado');
         }
 
         // Authorization: Only owner or admin can update
         if (user.role !== 'admin' && event.organizer._id.toString() !== user._id.toString()) {
-            throw new CustomError('No tienes permiso para modificar este evento', ErrorCodes.AUTHORIZATION_ERROR, 403);
+            throw new AppError('No tienes permiso para modificar este evento', 403);
         }
 
         if (eventData.date) {
             const eventDate = new Date(eventData.date);
             if (eventDate <= new Date()) {
-                throw new CustomError('La fecha no puede ser en el pasado', ErrorCodes.VALIDATION_ERROR, 400);
+                throw new ValidationError('La fecha no puede ser en el pasado');
             }
         }
 
         if (eventData.capacity !== undefined && eventData.capacity <= 0) {
-            throw new CustomError('La capacidad debe ser mayor a 0', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('La capacidad debe ser mayor a 0');
         }
 
         if (eventData.price !== undefined && eventData.price < 0) {
-            throw new CustomError('El precio no puede ser negativo', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('El precio no puede ser negativo');
         }
 
         // Evitar que actualicen el organizador por error/malicia
@@ -99,15 +98,15 @@ class EventsService {
         const event = await this.getEventById(id);
 
         if (event.status === 'cancelled') {
-            throw new CustomError('No se puede cambiar el estado de un evento cancelado', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('No se puede cambiar el estado de un evento cancelado');
         }
 
         if (newStatus === 'published' && event.status === 'finished') {
-            throw new CustomError('No se puede publicar un evento que ya finalizó', ErrorCodes.VALIDATION_ERROR, 400);
+            throw new ValidationError('No se puede publicar un evento que ya finalizó');
         }
 
         if (user.role !== 'admin' && event.organizer._id.toString() !== user._id.toString()) {
-            throw new CustomError('No tienes permiso para modificar este evento', ErrorCodes.AUTHORIZATION_ERROR, 403);
+            throw new AppError('No tienes permiso para modificar este evento', 403);
         }
 
         return await eventsRepository.updateEvent(id, { status: newStatus });
