@@ -88,8 +88,9 @@ class EventsService {
             throw new ValidationError('El precio no puede ser negativo');
         }
 
-        // Evitar que actualicen el organizador por error/malicia
+        // Evitar que actualicen el organizador o el status por error/malicia
         delete eventData.organizer;
+        delete eventData.status;
 
         return await eventsRepository.updateEvent(id, eventData);
     }
