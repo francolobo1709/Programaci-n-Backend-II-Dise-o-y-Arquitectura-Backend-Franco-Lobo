@@ -368,4 +368,57 @@ Entidad principal para la gestión de eventos.
 
 **Ejemplo de Petición:** `GET /api/events?status=published&category=workshop&page=2&limit=5`
 
+---
 
+## Casos a Probar y Evidencias (Rúbrica - Pre-entrega 6)
+
+A continuación se detallan las instrucciones para verificar cada caso de uso exigido por la rúbrica, asegurando que la lógica de negocio y permisos funcionan correctamente. Todas las peticiones asumen que estás autenticado y enviando la cookie JWT.
+
+### 1. Crear evento con rol `user` → 403 Forbidden
+- **Endpoint:** `POST /api/events`
+- **Condición:** Autenticado con una cuenta cuyo rol sea `user`.
+- **Cuerpo:** JSON con datos válidos.
+- **Evidencia:** El servidor rechaza la petición por la protección del middleware `authorize(['organizer', 'admin'])`.
+
+### 2. Crear evento con fecha pasada → Error de validación (400)
+- **Endpoint:** `POST /api/events`
+- **Condición:** Autenticado como `organizer` o `admin`.
+- **Cuerpo:** `"date": "2020-01-01T10:00:00"`
+- **Evidencia:** El servicio rechaza la creación mediante `ValidationError('No se puede crear un evento en una fecha pasada')`.
+
+### 3. Crear evento con capacity: 0 → Error de validación (400)
+- **Endpoint:** `POST /api/events`
+- **Condición:** Autenticado como `organizer` o `admin`.
+- **Cuerpo:** `"capacity": 0`
+- **Evidencia:** Mongoose / Service rechazan la solicitud (`'La capacidad debe ser mayor a 0'`).
+
+### 4. Organizer modifica evento propio → Éxito (200)
+- **Endpoint:** `PUT /api/events/:id`
+- **Condición:** Autenticado como el `organizer` que creó el evento.
+- **Cuerpo:** `{"price": 1500}`
+- **Evidencia:** El evento se actualiza correctamente y devuelve los nuevos datos.
+
+### 5. Organizer modifica evento ajeno → 403 Forbidden
+- **Endpoint:** `PUT /api/events/:id`
+- **Condición:** Autenticado como un `organizer` que **no** es dueño del evento.
+- **Evidencia:** Falla la validación `event.organizer._id !== user._id` en el servicio y retorna: `No tienes permiso para modificar este evento`.
+
+### 6. Admin modifica evento de otro organizador → Éxito (200)
+- **Endpoint:** `PUT /api/events/:id`
+- **Condición:** Autenticado como `admin`.
+- **Cuerpo:** `{"title": "Título Modificado por Admin"}`
+- **Evidencia:** La condición `user.role === 'admin'` permite saltar la restricción de dueño y actualiza la entidad.
+
+### 7. Cambiar estado de evento cancelado → Error (400)
+- **Endpoint:** `PATCH /api/events/:id/status`
+- **Condición:** Evento previamente actualizado a `status: "cancelled"`.
+- **Cuerpo:** `{"status": "published"}`
+- **Evidencia:** El servicio bloquea el cambio y responde: `No se puede cambiar el estado de un evento cancelado`.
+
+### 8. Listar con filtros combinados
+- **Endpoint:** `GET /api/events?status=published&category=workshop&page=2&limit=5`
+- **Evidencia:** La API extrae correctamente el status y la categoría, aplica paginación con `mongoose-paginate-v2` y retorna la metadata (`page`, `limit`, `total`, `totalPages`) junto al array `data`.
+
+### 9. Consultar evento inexistente → 404 Not Found
+- **Endpoint:** `GET /api/events/65d1a123f1234567890abcde` (ID válido pero inexistente).
+- **Evidencia:** El repositorio devuelve null y el servicio dispara `NotFoundError`, resultando en un 404 con mensaje `Evento no encontrado`.
