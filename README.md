@@ -1,10 +1,8 @@
-# CleanMatch - API de Servicios y Reservas
+# Events API - Sistema de Gestión de Eventos
 
-> **Nota:** Este proyecto es la continuación del proyecto ya utilizado en Backend I.
+Sistema Backend para Eventos. API REST construida con **Node.js + Express**, persistencia en **MongoDB Atlas** con Mongoose y arquitectura en capas.
 
-Sistema Backend de Turnos y Reservas. API REST construida con **Node.js + Express**, persistencia en **MongoDB Atlas** con Mongoose y arquitectura en capas.
-
-> **Entrega Final** — CRUD completo de servicios y reservas, relaciones con populate, filtros, paginación, ordenamiento, validaciones con Zod, vistas con Handlebars y comunicación en tiempo real con Socket.io.
+> **Entrega Final** — CRUD completo de eventos, relaciones con populate, filtros, paginación, ordenamiento, validaciones con Zod y comunicación en tiempo real.
 
 ## Requisitos
 
@@ -44,7 +42,7 @@ npm run dev    # desarrollo con watch
 Salida esperada (sin MongoDB):
 
 ```
-🚀 CleanMatch corriendo en modo: development
+🚀 Events API corriendo en modo: development
 📡 Servidor escuchando en http://localhost:8080
 ⚠️  MongoDB no disponible. /api/messages no funcionará.
 ```
@@ -53,7 +51,7 @@ Salida esperada (con MongoDB):
 
 ```
 ✅ MongoDB conectado correctamente.
-🚀 CleanMatch corriendo en modo: development
+🚀 Events API corriendo en modo: development
 📡 Servidor escuchando en http://localhost:8080
 ```
 
@@ -422,3 +420,48 @@ A continuación se detallan las instrucciones para verificar cada caso de uso ex
 ### 9. Consultar evento inexistente → 404 Not Found
 - **Endpoint:** `GET /api/events/65d1a123f1234567890abcde` (ID válido pero inexistente).
 - **Evidencia:** El repositorio devuelve null y el servicio dispara `NotFoundError`, resultando en un 404 con mensaje `Evento no encontrado`.
+
+---
+
+### Tickets (Inscripciones) — `/api/tickets` y `/api/events/:id/tickets`
+
+Gestión de inscripciones a eventos, incluyendo control de cupos y notificaciones por email.
+
+| Método   | Ruta                              | Acceso                        | Descripción                               |
+|----------|-----------------------------------|-------------------------------|-------------------------------------------|
+| `POST`   | `/api/events/:id/tickets`         | Autenticado (`user`, etc.)    | Inscribirse a un evento                   |
+| `GET`    | `/api/tickets/my-tickets`         | Autenticado                   | Ver mis tickets activos e historial       |
+| `GET`    | `/api/events/:id/tickets`         | `organizer` (dueño) o `admin` | Ver los inscriptos de un evento           |
+| `PATCH`  | `/api/tickets/:tid/cancel`        | Dueño del ticket o `admin`    | Cancelar una inscripción                  |
+
+#### Modelo y Estados del Ticket
+
+- **Estados (`status`):** `confirmed`, `pending`, `cancelled`.
+- **Campos principales:** Referencia a usuario, referencia a evento, cantidad (`quantity`), código único de reserva y fecha de cancelación (`cancelledAt`). 
+- **Estructura limpia:** El ticket almacena referncias (ObjectIds) y no duplica los objetos embebidos. Los datos se resuelven con `populate` en las consultas.
+
+#### Flujo de Inscripción y Reglas de Cupos (Business Logic)
+
+1. **Validaciones Previas:** El evento debe existir, estar en estado `published` y no encontrarse finalizado ni cancelado.
+2. **Duplicados:** Solo se permite un ticket activo por usuario y evento.
+3. **Control de Cupos:** El sistema verifica en tiempo real la sumatoria de `quantity` de los tickets activos (`status !== 'cancelled'`). Si hay suficiente `capacity`, se permite la inscripción.
+4. **Reserva y Correo:** Al crearse el ticket con éxito, genera un `reservationCode` y dispara asincrónicamente un correo electrónico de confirmación usando Nodemailer a la dirección del usuario autenticado.
+
+#### Cancelación
+
+Al cancelar un ticket (`PATCH /cancel`):
+- El estado pasa a `cancelled` y se registra la fecha en `cancelledAt`.
+- **Físicamente NO se elimina** el registro de la base de datos (soft-delete lógico).
+- Automáticamente, la capacidad (`quantity`) de ese ticket deja de contar contra el `capacity` del evento, liberando el cupo de forma inmediata para otras personas.
+
+#### Variables de Entorno de Email (Nodemailer)
+
+Para que el envío de confirmaciones funcione, es requisito configurar las variables `MAIL_*` en el archivo `.env`:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=tu_correo@gmail.com
+MAIL_PASS=tu_password_de_aplicacion
+MAIL_FROM="API Eventos" <no-reply@eventos.com>
+```

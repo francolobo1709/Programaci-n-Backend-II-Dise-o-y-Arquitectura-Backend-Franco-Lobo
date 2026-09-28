@@ -6,8 +6,8 @@ import { AppError } from '../errors/AppError.js';
  * Debe registrarse como el ÚLTIMO middleware en app.js.
  */
 export function errorHandler(err, req, res, next) {
-    if (err instanceof AppError) {
-        return res.status(err.statusCode).json({ status: 'error', message: err.message });
+    if (err instanceof AppError || err.statusCode) {
+        return res.status(err.statusCode || 400).json({ status: 'error', message: err.message });
     }
 
     console.error('[Unhandled Error]', err);

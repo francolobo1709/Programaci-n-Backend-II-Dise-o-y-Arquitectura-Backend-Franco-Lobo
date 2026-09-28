@@ -12,8 +12,10 @@ requiredEnvs.forEach((envVar) => {
 });
 
 export const config = {
-    port:     process.env.PORT,
-    env:      process.env.NODE_ENV,
-    mongoUri: process.env.MONGO_URI,
+    port: process.env.PORT,
+    env: process.env.NODE_ENV,
+    mongoUri: process.env.NODE_ENV === 'test'
+        ? (process.env.MONGO_URI_TEST || process.env.MONGO_URI)
+        : process.env.MONGO_URI,
     jwtSecret: process.env.JWT_SECRET,
 };

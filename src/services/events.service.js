@@ -17,7 +17,7 @@ class EventsService {
         }
 
         // Se asigna automáticamente el organizador
-        eventData.organizer = user._id;
+        eventData.organizer = user.id;
 
         return await eventsRepository.createEvent(eventData);
     }
@@ -38,7 +38,7 @@ class EventsService {
         const paginateOptions = {
             page: parseInt(options.page) || 1,
             limit: parseInt(options.limit) || 10,
-            sort: options.sort ? { [options.sort]: 1 } : { createdAt: -1 },
+            sort: options.sort ? { [options.sort]: options.order === 'desc' ? -1 : 1 } : { createdAt: -1 },
             populate: { path: 'organizer', select: 'first_name last_name email' }
         };
 
@@ -69,7 +69,7 @@ class EventsService {
         }
 
         // Authorization: Only owner or admin can update
-        if (user.role !== 'admin' && event.organizer._id.toString() !== user._id.toString()) {
+        if (user.role !== 'admin' && event.organizer._id.toString() !== user.id.toString()) {
             throw new AppError('No tienes permiso para modificar este evento', 403);
         }
 
@@ -106,7 +106,7 @@ class EventsService {
             throw new ValidationError('No se puede publicar un evento que ya finalizó');
         }
 
-        if (user.role !== 'admin' && event.organizer._id.toString() !== user._id.toString()) {
+        if (user.role !== 'admin' && event.organizer._id.toString() !== user.id.toString()) {
             throw new AppError('No tienes permiso para modificar este evento', 403);
         }
 

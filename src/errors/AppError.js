@@ -17,3 +17,9 @@ export class NotFoundError extends AppError {
         super(`${resource} con id ${id} no encontrado.`, 404);
     }
 }
+
+export class UnauthorizedError extends AppError {
+    constructor(message = 'No autorizado') {
+        super(message, 403);
+    }
+}

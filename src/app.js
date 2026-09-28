@@ -9,6 +9,7 @@ import servicesRouter from './routes/services.router.js';
 import bookingsRouter from './routes/bookings.router.js';
 import messagesRouter from './routes/messages.router.js';
 import viewsRouter from './routes/views.router.js';
+import ticketsRouter from './routes/tickets.router.js';
 
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -26,6 +27,7 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/messages', messagesRouter);
+app.use('/api/tickets', ticketsRouter);
 app.use('/', viewsRouter);
 
 app.use(errorHandler);
