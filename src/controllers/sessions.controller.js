@@ -1,12 +1,13 @@
 import { generateToken } from '../utils/jwt.utils.js';
 import { UsersRepository } from '../repositories/users.repository.js';
+import { UserDTO } from '../dtos/user.dto.js';
 
 export class SessionsController {
     static async register(req, res, next) {
         try {
             res.status(201).json({
                 status: 'success',
-                payload: req.user
+                payload: new UserDTO(req.user)
             });
         } catch (error) {
             next(error);
@@ -37,7 +38,7 @@ export class SessionsController {
         try {
             res.status(200).json({
                 status: 'success',
-                payload: req.user
+                payload: new UserDTO(req.user)
             });
         } catch (error) {
             next(error);
@@ -59,9 +60,10 @@ export class SessionsController {
     static async getAllUsers(req, res, next) {
         try {
             const users = await UsersRepository.findAll();
+            const usersDto = users.map(user => new UserDTO(user));
             res.status(200).json({
                 status: 'success',
-                payload: users
+                payload: usersDto
             });
         } catch (error) {
             next(error);

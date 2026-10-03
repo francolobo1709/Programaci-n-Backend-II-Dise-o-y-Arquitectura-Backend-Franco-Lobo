@@ -35,3 +35,25 @@ export const sendTicketEmail = async (userEmail, eventTitle, reservationCode, qu
         // pero en un sistema robusto se podría reencolar o manejar de otra forma.
     }
 };
+
+export const sendCancellationEmail = async (userEmail, eventTitle, reservationCode) => {
+    try {
+        const mailOptions = {
+            from: process.env.MAIL_FROM || '"Eventos API" <no-reply@eventos.com>',
+            to: userEmail,
+            subject: `Cancelación de inscripción: ${eventTitle}`,
+            html: `
+                <h1>Inscripción cancelada</h1>
+                <p>Tu inscripción al evento <strong>${eventTitle}</strong> ha sido cancelada.</p>
+                <p>Tu código de reserva era: <strong>${reservationCode}</strong></p>
+                <p>Esperamos verte en futuros eventos.</p>
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`Email de cancelación enviado a ${userEmail}: ${info.messageId}`);
+        return info;
+    } catch (error) {
+        console.error(`Error enviando email de cancelación a ${userEmail}:`, error);
+    }
+};

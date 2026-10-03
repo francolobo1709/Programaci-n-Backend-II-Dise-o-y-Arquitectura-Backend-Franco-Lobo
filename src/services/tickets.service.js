@@ -1,8 +1,9 @@
 import { ticketsRepository } from '../repositories/tickets.repository.js';
 import { eventsRepository } from '../repositories/events.repository.js';
-import { AppError, NotFoundError, UnauthorizedError } from '../errors/AppError.js';
+import { AppError, NotFoundError, UnauthorizedError, ConflictError } from '../errors/AppError.js';
+import { UsersRepository } from '../repositories/users.repository.js';
 import { assertValidId } from '../repositories/repository.utils.js';
-import { sendTicketEmail } from '../utils/mailer.js';
+import { sendTicketEmail, sendCancellationEmail } from '../utils/mailer.js';
 
 export const ticketsService = {
     async create(userId, userEmail, eventId, quantityStr) {
@@ -29,7 +30,7 @@ export const ticketsService = {
         // 3. Validar regla de duplicados (una inscripción activa por usuario)
         const activeTicket = await ticketsRepository.getActiveTicketByUserAndEvent(userId, eventId);
         if (activeTicket) {
-            throw new AppError('Ya te encuentras inscripto en este evento', 400);
+            throw new ConflictError('Ya te encuentras inscripto en este evento');
         }
 
         // 4. Validar cupos
@@ -88,9 +89,22 @@ export const ticketsService = {
             throw new AppError('El ticket ya se encuentra cancelado', 400);
         }
 
-        return await ticketsRepository.update(ticketId, {
+        const cancelledTicket = await ticketsRepository.update(ticketId, {
             status: 'cancelled',
             cancelledAt: new Date()
         });
+
+        // Enviar email de cancelación
+        try {
+            const ticketUser = await UsersRepository.findById(ticket.user);
+            const event = await eventsRepository.getEventById(ticket.event);
+            if (ticketUser && event) {
+                sendCancellationEmail(ticketUser.email, event.title, ticket.reservationCode);
+            }
+        } catch (error) {
+            console.error('Error al intentar enviar email de cancelación:', error);
+        }
+
+        return cancelledTicket;
     }
 };

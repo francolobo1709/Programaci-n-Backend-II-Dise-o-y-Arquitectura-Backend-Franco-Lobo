@@ -21,6 +21,15 @@ export class UsersDao {
     }
 
     /**
+     * Busca un usuario por su id.
+     * @param {string} id - Id a buscar.
+     * @returns {Object|null} El documento del usuario o null.
+     */
+    static async findById(id) {
+        return await UserModel.findById(id);
+    }
+
+    /**
      * Devuelve todos los usuarios (sin contraseñas).
      * @returns {Array} Lista de usuarios.
      */

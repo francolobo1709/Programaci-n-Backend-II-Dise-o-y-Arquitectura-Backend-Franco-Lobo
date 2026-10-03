@@ -125,10 +125,11 @@ Request
 | Capa           | Responsabilidad                                                                 |
 |----------------|---------------------------------------------------------------------------------|
 | **Router**     | Define endpoints y aplica middlewares de validación. Sin lógica de negocio.    |
-| **Controller** | Lee `req`, llama al service y responde con `res`. Sin lógica de negocio.       |
-| **Service**    | Concentra las reglas de negocio. No conoce `req`, `res` ni la fuente de datos. |
-| **Repository** | Ofrece métodos de acceso a datos, valida IDs y lanza errores tipados.          |
-| **DAO**        | Única capa que accede directamente a MongoDB vía Mongoose.                     |
+| **Controller** | Solo coordina request/response. Llama al Service y aplica los DTOs.            |
+| **Service**    | Lógica de negocio (cupos, estados, etc.). Nunca importa modelos.               |
+| **Repository** | Métodos orientados al dominio (ej: findPublishedEvents). Usa DAOs.             |
+| **DAO**        | Único lugar donde se importan modelos Mongoose directamente. Acceso a DB.      |
+| **DTO**        | Filtra y da formato a las respuestas (oculta contraseñas y datos sensibles).   |
 
 ### Regla de negocio clave — bookings
 

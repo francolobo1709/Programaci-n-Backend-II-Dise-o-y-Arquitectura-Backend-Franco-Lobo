@@ -1,0 +1,855 @@
+{
+  "info": {
+    "name": "Programación Backend II - API",
+    "description": "Colección de endpoints para el proyecto de Diseño y Arquitectura Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john@example.com\",\n    \"age\": 30,\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Current User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/current",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "current"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "users"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get all events",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get event by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/events/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Event Name\",\n    \"description\": \"Event description\",\n    \"date\": \"2024-12-31\",\n    \"location\": \"Event location\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Event Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change Event Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/:id/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket for Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/:id/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ":id",
+                "tickets"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tickets of Event",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/events/:id/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ":id",
+                "tickets"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Get My Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/my-tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "my-tickets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel Ticket",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/:tid/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                ":tid",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "tid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "item": [
+        {
+          "name": "Get all services",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get service by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/services/:sid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services",
+                ":sid"
+              ],
+              "variable": [
+                {
+                  "key": "sid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Service Name\",\n    \"price\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Service",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"price\": 150\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/services/:sid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services",
+                ":sid"
+              ],
+              "variable": [
+                {
+                  "key": "sid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Service",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/services/:sid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services",
+                ":sid"
+              ],
+              "variable": [
+                {
+                  "key": "sid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Get all bookings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get booking by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/:bid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                ":bid"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"event\": \"eventId\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"confirmed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/:bid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                ":bid"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Booking",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/:bid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                ":bid"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Service to Booking",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/:bid/services/:sid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                ":bid",
+                "services",
+                ":sid"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                },
+                {
+                  "key": "sid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Service from Booking",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/:bid/services/:sid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                ":bid",
+                "services",
+                ":sid"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                },
+                {
+                  "key": "sid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Clear Booking Services",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/:bid/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                ":bid",
+                "services"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Get all messages",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get message by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/:mid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages",
+                ":mid"
+              ],
+              "variable": [
+                {
+                  "key": "mid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get messages by booking",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/booking/:bid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages",
+                "booking",
+                ":bid"
+              ],
+              "variable": [
+                {
+                  "key": "bid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"Hello, this is a message!\",\n    \"bookingId\": \"someBookingId\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/:mid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages",
+                ":mid"
+              ],
+              "variable": [
+                {
+                  "key": "mid",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Views",
+      "item": [
+        {
+          "name": "Services View",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/views/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "views",
+                "services"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Availability View",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/views/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "views",
+                "availability"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}

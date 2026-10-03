@@ -1,0 +1,58 @@
+paths:
+  /api/events:
+    get:
+      summary: Obtiene listado de eventos paginado y filtrado
+      tags:
+        - Events
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: Filtra por estado (ej. published)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Límite por página
+      responses:
+        "200":
+          description: Listado de eventos
+    post:
+      summary: Crea un nuevo evento (Solo organizer/admin)
+      tags:
+        - Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                capacity:
+                  type: integer
+                price:
+                  type: number
+      responses:
+        "201":
+          description: Evento creado
+        "400":
+          description: Datos inválidos
+        "403":
+          description: Sin permisos

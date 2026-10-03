@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
 import { config } from '../config/env.config.js';
+import { logger } from '../utils/logger.js';
 
 let isConnected = false;
 
 export async function connectDB() {
     if (isConnected) return;
     if (!config.mongoUri) {
-        throw new Error('MONGO_URI no está definida en las variables de entorno.');
+        throw new Error('MONGO_URL no está definida en las variables de entorno.');
     }
     await mongoose.connect(config.mongoUri);
     isConnected = true;
-    console.log('✅ MongoDB conectado correctamente.');
+    logger.info('✅ MongoDB conectado correctamente.');
 }
 
 export function getConnectionState() {

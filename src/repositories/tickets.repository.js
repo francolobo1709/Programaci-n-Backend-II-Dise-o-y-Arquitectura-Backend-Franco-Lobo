@@ -1,4 +1,4 @@
-import { ticketDAO } from '../daos/ticket.dao.js';
+import { ticketDAO } from '../dao/ticket.dao.js';
 
 export class TicketsRepository {
     async create(ticketData) {

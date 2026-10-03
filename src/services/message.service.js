@@ -1,6 +1,7 @@
 import { messageRepository } from '../repositories/message.repository.js';
 import { bookingRepository } from '../repositories/bookings.repository.js';
 import { ValidationError } from '../errors/AppError.js';
+import { getIO } from '../config/socket.js';
 
 const REQUIRED_FIELDS = ['booking', 'sender', 'content'];
 
@@ -21,7 +22,16 @@ export const messageService = {
         validate(data);
         // Verifica que la reserva exista antes de asociar el mensaje
         await bookingRepository.getById(data.booking);
-        return messageRepository.create(data);
+        const newMessage = await messageRepository.create(data);
+        
+        try {
+            const io = getIO();
+            io.emit('newMessage', newMessage);
+        } catch (error) {
+            console.error('Socket.io no está inicializado o hubo un error al emitir:', error.message);
+        }
+        
+        return newMessage;
     },
     remove: (id) => messageRepository.remove(id),
 };

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=development
+      - MONGO_URL=mongodb://mongo:27017/events_db
+      - JWT_SECRET=super_secret_key_change_me
+      - JWT_EXPIRES_IN=1h
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USER=tu_correo@gmail.com
+      - MAIL_PASS=tu_password_de_aplicacion
+      - MAIL_FROM="API Eventos" <no-reply@eventos.com>
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

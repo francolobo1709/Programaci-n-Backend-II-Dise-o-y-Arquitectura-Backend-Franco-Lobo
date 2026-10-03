@@ -1,4 +1,5 @@
 import { TicketModel } from '../models/ticket.model.js';
+import mongoose from 'mongoose';
 
 export class TicketDAO {
     async create(ticketData) {
@@ -22,8 +23,13 @@ export class TicketDAO {
     }
 
     async sumQuantity(filter) {
+        const matchFilter = { ...filter };
+        if (matchFilter.event && typeof matchFilter.event === 'string') {
+            matchFilter.event = new mongoose.Types.ObjectId(matchFilter.event);
+        }
+        
         const result = await TicketModel.aggregate([
-            { $match: filter },
+            { $match: matchFilter },
             { $group: { _id: null, totalQuantity: { $sum: '$quantity' } } }
         ]);
         return result.length > 0 ? result[0].totalQuantity : 0;

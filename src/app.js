@@ -2,6 +2,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import { initializePassport } from './config/passport.config.js';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpecs } from './config/swagger.config.js';
 
 import eventsRouter from './routes/events.router.js';
 import sessionsRouter from './routes/sessions.router.js';
@@ -29,6 +31,9 @@ app.use('/api/bookings', bookingsRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/tickets', ticketsRouter);
 app.use('/', viewsRouter);
+
+// Documentación de la API
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use(errorHandler);
 
