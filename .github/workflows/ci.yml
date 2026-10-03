@@ -10,6 +10,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -29,4 +35,6 @@ jobs:
       run: npm test
       env:
         NODE_ENV: test
+        PORT: 8080
+        MONGO_URL: mongodb://localhost:27017/events_test_db
         JWT_SECRET: testing_secret_key
