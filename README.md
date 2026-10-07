@@ -2,7 +2,7 @@
 
 Sistema Backend para Eventos. API REST construida con **Node.js + Express**, persistencia en **MongoDB Atlas** con Mongoose y arquitectura en capas.
 
-> **Entrega Final** — CRUD completo de eventos, relaciones con populate, filtros, paginación, ordenamiento, validaciones con Zod y comunicación en tiempo real.
+> **Entrega Final** — CRUD completo de eventos, relaciones con populate, filtros, paginación, ordenamiento, validaciones con Zod y comunicación en tiempo real. **Incluye arquitectura profesional por capas (DAO, Repository, DTO), Logging con Winston, Documentación con Swagger, Dockerización y CI/CD.**
 
 ## Requisitos
 
@@ -29,7 +29,7 @@ cp .env.example .env
 |-------------|-----------------------------------|-----------|---------------------------------|
 | `PORT`      | Puerto del servidor               | ✅        | `8080`                          |
 | `NODE_ENV`  | Entorno de ejecución              | ✅        | `development`                   |
-| `MONGO_URI` | URI de conexión a MongoDB Atlas   | ✅ | `mongodb+srv://...` |
+| `MONGO_URL` | URI de conexión a MongoDB Atlas   | ✅ | `mongodb+srv://...` |
 | `JWT_SECRET`| Secreto para firmar tokens JWT    | ✅ | `super_secret_key`              |
 
 ## Ejecución
@@ -57,6 +57,56 @@ Salida esperada (con MongoDB):
 
 ---
 
+## 🐳 Dockerización (NUEVO)
+
+El proyecto está completamente dockerizado para ejecutarse en cualquier entorno sin depender de Node.js instalado localmente.
+
+1. Asegúrate de tener [Docker Desktop](https://www.docker.com/products/docker-desktop) instalado y en ejecución.
+2. Ejecuta el orquestador:
+```bash
+docker compose up -d
+```
+3. Esto levantará:
+   - Un contenedor con **MongoDB** en el puerto 27017.
+   - Un contenedor con la **API Node.js** en el puerto 8080 (basado en Alpine Linux ultra-ligero).
+
+Para bajar los contenedores:
+```bash
+docker compose down
+```
+
+---
+
+## 📝 Documentación Swagger (NUEVO)
+
+La API cuenta con documentación interactiva autogenerada mediante Open API 3.0 (Swagger). 
+
+Una vez que el servidor esté corriendo, puedes acceder a la interfaz gráfica en:
+👉 **http://localhost:8080/api-docs**
+
+Desde allí podrás revisar los schemas de los endpoints (`/api/events`, `/api/sessions`, etc.) e interactuar con ellos sin necesidad de Postman.
+
+---
+
+## 📊 Sistema de Logging Profesional (NUEVO)
+
+Se reemplazaron los `console.log` nativos por el logger profesional **Winston**. 
+- En entorno `development`: Los logs salen por consola con colores (info, warning, error).
+- En entorno `production`: Los logs se guardan de manera estructurada en un archivo local `errors.log` (para trazabilidad en servidores).
+
+---
+
+## 🤖 CI/CD con GitHub Actions (NUEVO)
+
+Se integró un flujo de trabajo automatizado (Continuous Integration) en el directorio `.github/workflows/ci.yml`.
+Cada vez que se realiza un `push` a las ramas principales, un servidor en la nube de GitHub Actions:
+1. Levanta un entorno con **Node.js 18.x y 20.x**.
+2. Levanta un contenedor efímero de **MongoDB** como servicio auxiliar.
+3. Ejecuta **todas las pruebas unitarias** de Jest (`npm test`).
+Esto asegura que ningún código se introduzca a la rama principal si rompe el funcionamiento de los servicios o de la base de datos.
+
+---
+
 ## Arquitectura en capas
 
 El proyecto implementa una arquitectura en capas donde cada una tiene una responsabilidad única.
@@ -66,7 +116,7 @@ El proyecto implementa una arquitectura en capas donde cada una tiene una respon
 ```
 src/
 ├── config/
-│   ├── env.config.js       → Variables de entorno (PORT, NODE_ENV, MONGO_URI)
+│   ├── env.config.js       → Variables de entorno (PORT, NODE_ENV, MONGO_URL)
 │   └── socket.js           → Configuración de Socket.io
 ├── database/
 │   └── connection.js       → Conexión a MongoDB Atlas (todos los módulos)
@@ -224,7 +274,7 @@ Al agregar un servicio a una reserva (`POST /api/bookings/:bid/services/:sid`), 
 | `POST`   | `/api/messages`              | Crear un mensaje                  |
 | `DELETE` | `/api/messages/:mid`         | Eliminar un mensaje               |
 
-> Si `MONGO_URI` no está configurada o la conexión falla, estos endpoints devuelven `503`.
+> Si `MONGO_URL` no está configurada o la conexión falla, estos endpoints devuelven `503`.
 
 ---
 
