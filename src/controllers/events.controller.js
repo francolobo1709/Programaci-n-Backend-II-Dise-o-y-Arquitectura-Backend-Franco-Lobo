@@ -1,12 +1,13 @@
 import { eventsService } from '../services/events.service.js';
-import { EventDTO } from '../dtos/event.dto.js';
+import { EventInputDTO, EventResponseDTO } from '../dtos/event.dto.js';
 import { TicketDTO } from '../dtos/ticket.dto.js';
 import { ticketsService } from '../services/tickets.service.js';
 
 export const createEvent = async (req, res, next) => {
     try {
-        const event = await eventsService.createEvent(req.body, req.user);
-        res.status(201).json({ status: 'success', data: new EventDTO(event) });
+        const inputDto = new EventInputDTO(req.body);
+        const event = await eventsService.createEvent(inputDto.toPayload(), req.user);
+        res.status(201).json({ status: 'success', data: new EventResponseDTO(event) });
     } catch (error) {
         next(error);
     }
@@ -48,8 +49,9 @@ export const getEventById = async (req, res, next) => {
 
 export const updateEvent = async (req, res, next) => {
     try {
-        const event = await eventsService.updateEvent(req.params.id, req.body, req.user);
-        res.status(200).json({ status: 'success', data: new EventDTO(event) });
+        const inputDto = new EventInputDTO(req.body);
+        const event = await eventsService.updateEvent(req.params.id, inputDto.toPayload(), req.user);
+        res.status(200).json({ status: 'success', data: new EventResponseDTO(event) });
     } catch (error) {
         next(error);
     }
@@ -59,7 +61,7 @@ export const changeEventStatus = async (req, res, next) => {
     try {
         const { status } = req.body;
         const event = await eventsService.changeEventStatus(req.params.id, status, req.user);
-        res.status(200).json({ status: 'success', data: new EventDTO(event) });
+        res.status(200).json({ status: 'success', data: new EventResponseDTO(event) });
     } catch (error) {
         next(error);
     }

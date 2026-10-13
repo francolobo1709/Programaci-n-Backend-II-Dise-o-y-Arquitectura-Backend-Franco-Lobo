@@ -1,0 +1,177 @@
+paths:
+  /api/bookings:
+    get:
+      summary: Lista todas las reservas
+      tags:
+        - Bookings
+      responses:
+        "200":
+          description: Listado de reservas
+    post:
+      summary: Crea una nueva reserva
+      tags:
+        - Bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - clientName
+                - clientEmail
+                - date
+              properties:
+                clientName:
+                  type: string
+                  example: Maria Gomez
+                clientEmail:
+                  type: string
+                  format: email
+                  example: maria@mail.com
+                date:
+                  type: string
+                  format: date-time
+                  example: 2027-08-20T10:00:00.000Z
+      responses:
+        "201":
+          description: Reserva creada exitosamente
+        "400":
+          description: Datos inválidos
+
+  /api/bookings/{bid}:
+    get:
+      summary: Obtiene una reserva por su ID
+      tags:
+        - Bookings
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+      responses:
+        "200":
+          description: Detalle de la reserva
+        "404":
+          description: Reserva no encontrada
+    put:
+      summary: Actualiza datos de una reserva
+      tags:
+        - Bookings
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientName:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Reserva actualizada
+        "404":
+          description: Reserva no encontrada
+    delete:
+      summary: Elimina una reserva por ID
+      tags:
+        - Bookings
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+      responses:
+        "200":
+          description: Reserva eliminada
+        "404":
+          description: Reserva no encontrada
+
+  /api/bookings/{bid}/services/{sid}:
+    post:
+      summary: Agrega un servicio a la reserva (incrementa quantity si ya existe)
+      tags:
+        - Bookings
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+        - in: path
+          name: sid
+          required: true
+          schema:
+            type: string
+          description: ID del servicio a incorporar
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  default: 1
+                  example: 2
+      responses:
+        "200":
+          description: Servicio agregado o incrementado en la reserva
+        "404":
+          description: Reserva o servicio no encontrado
+    delete:
+      summary: Quita un servicio específico de la reserva
+      tags:
+        - Bookings
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+        - in: path
+          name: sid
+          required: true
+          schema:
+            type: string
+          description: ID del servicio a remover
+      responses:
+        "200":
+          description: Servicio removido de la reserva
+        "404":
+          description: Reserva no encontrada
+
+  /api/bookings/{bid}/services:
+    delete:
+      summary: Vacía todos los servicios de una reserva
+      tags:
+        - Bookings
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+      responses:
+        "200":
+          description: Servicios de la reserva vaciados
+        "404":
+          description: Reserva no encontrada

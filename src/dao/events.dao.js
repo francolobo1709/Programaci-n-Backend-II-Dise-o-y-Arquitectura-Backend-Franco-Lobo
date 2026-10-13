@@ -14,6 +14,6 @@ export class EventsDao {
     }
 
     static async update(id, eventData) {
-        return await EventModel.findByIdAndUpdate(id, eventData, { new: true });
+        return await EventModel.findByIdAndUpdate(id, eventData, { returnDocument: 'after' });
     }
 }

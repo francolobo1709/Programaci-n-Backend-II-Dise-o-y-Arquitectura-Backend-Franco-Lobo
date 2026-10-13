@@ -7,7 +7,8 @@ import { getConnectionState } from '../database/connection.js';
 export function requireMongo(req, res, next) {
     if (getConnectionState() !== 1) {
         return res.status(503).json({
-            error: 'Servicio no disponible.',
+            status: 'error',
+            message: 'Servicio no disponible.',
             details: 'La base de datos MongoDB no está conectada. Verificá MONGO_URL y la whitelist de Atlas.',
         });
     }

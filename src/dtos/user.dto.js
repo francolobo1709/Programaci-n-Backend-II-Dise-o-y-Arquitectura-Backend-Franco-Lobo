@@ -8,3 +8,5 @@ export class UserDTO {
         this.age = user.age;
     }
 }
+
+export const UserResponseDTO = UserDTO;

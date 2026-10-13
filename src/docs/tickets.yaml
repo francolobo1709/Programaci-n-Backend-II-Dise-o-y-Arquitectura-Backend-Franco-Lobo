@@ -1,0 +1,50 @@
+paths:
+  /api/tickets/my-tickets:
+    get:
+      summary: Obtiene el listado de tickets del usuario autenticado
+      tags:
+        - Tickets
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Cantidad por página
+      responses:
+        "200":
+          description: Listado de tickets del usuario con datos del evento populados
+        "401":
+          description: No autenticado
+
+  /api/tickets/{tid}/cancel:
+    patch:
+      summary: Cancela una inscripción / ticket (Dueño del ticket o admin)
+      tags:
+        - Tickets
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: tid
+          required: true
+          schema:
+            type: string
+          description: ID del ticket a cancelar
+      responses:
+        "200":
+          description: Ticket cancelado exitosamente (libera el cupo y envía email)
+        "400":
+          description: El ticket ya se encuentra cancelado
+        "401":
+          description: No autenticado
+        "404":
+          description: Ticket no encontrado

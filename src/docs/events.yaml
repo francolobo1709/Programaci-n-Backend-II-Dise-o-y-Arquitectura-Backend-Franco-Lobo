@@ -9,24 +9,142 @@ paths:
           name: status
           schema:
             type: string
-          description: Filtra por estado (ej. published)
+          description: Filtra por estado (draft, published, cancelled, finished)
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filtra por categoría
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: Filtra por ubicación (búsqueda parcial)
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date
+          description: Fecha desde (YYYY-MM-DD)
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date
+          description: Fecha hasta (YYYY-MM-DD)
         - in: query
           name: page
           schema:
             type: integer
+            default: 1
           description: Número de página
         - in: query
           name: limit
           schema:
             type: integer
-          description: Límite por página
+            default: 10
+          description: Cantidad de resultados por página
+        - in: query
+          name: sort
+          schema:
+            type: string
+            default: createdAt
+          description: Campo por el cual ordenar
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Dirección del ordenamiento
       responses:
         "200":
-          description: Listado de eventos
+          description: Listado paginado de eventos obtenido exitosamente
+        "500":
+          description: Error interno del servidor
     post:
-      summary: Crea un nuevo evento (Solo organizer/admin)
+      summary: Crea un nuevo evento (Solo organizer o admin)
       tags:
         - Events
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - category
+                - date
+                - location
+                - capacity
+                - price
+              properties:
+                title:
+                  type: string
+                  example: Conferencia de Node.js
+                description:
+                  type: string
+                  example: Encuentro anual de desarrolladores Backend
+                category:
+                  type: string
+                  example: tecnología
+                date:
+                  type: string
+                  format: date-time
+                  example: 2027-10-15T18:00:00.000Z
+                location:
+                  type: string
+                  example: Buenos Aires, Argentina
+                capacity:
+                  type: integer
+                  example: 100
+                price:
+                  type: number
+                  example: 1500
+      responses:
+        "201":
+          description: Evento creado exitosamente
+        "400":
+          description: Datos inválidos o fecha en el pasado
+        "401":
+          description: No autenticado
+        "403":
+          description: No tienes permisos suficientes
+
+  /api/events/{id}:
+    get:
+      summary: Obtiene un evento por su ID
+      tags:
+        - Events
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+      responses:
+        "200":
+          description: Evento encontrado
+        "404":
+          description: Evento no encontrado
+    put:
+      summary: Actualiza un evento (Solo organizador creador o admin)
+      tags:
+        - Events
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento a modificar
       requestBody:
         required: true
         content:
@@ -38,21 +156,106 @@ paths:
                   type: string
                 description:
                   type: string
-                category:
-                  type: string
-                date:
-                  type: string
-                  format: date-time
-                location:
-                  type: string
-                capacity:
-                  type: integer
                 price:
                   type: number
+                capacity:
+                  type: integer
+      responses:
+        "200":
+          description: Evento modificado exitosamente
+        "400":
+          description: Datos inválidos o evento cancelado
+        "401":
+          description: No autenticado
+        "403":
+          description: No autorizado para modificar este evento
+        "404":
+          description: Evento no encontrado
+
+  /api/events/{id}/status:
+    patch:
+      summary: Modifica el estado de un evento (Solo organizador creador o admin)
+      tags:
+        - Events
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [draft, published, cancelled, finished]
+                  example: published
+      responses:
+        "200":
+          description: Estado del evento actualizado
+        "400":
+          description: Transición de estado inválida
+        "403":
+          description: Permisos insuficientes
+
+  /api/events/{id}/tickets:
+    post:
+      summary: Inscribirse a un evento (Crear ticket)
+      tags:
+        - Events
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  default: 1
+                  example: 1
       responses:
         "201":
-          description: Evento creado
+          description: Inscripción exitosa (Ticket generado y email enviado)
         "400":
-          description: Datos inválidos
+          description: Cupo insuficiente o evento no disponible
+        "409":
+          description: Usuario ya inscripto previamente
+    get:
+      summary: Ver inscriptos de un evento (Solo organizador del evento o admin)
+      tags:
+        - Events
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+      responses:
+        "200":
+          description: Lista paginada de tickets del evento
+        "401":
+          description: No autenticado
         "403":
-          description: Sin permisos
+          description: No autorizado

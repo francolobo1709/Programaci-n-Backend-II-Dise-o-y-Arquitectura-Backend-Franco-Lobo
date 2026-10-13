@@ -1,20 +1,21 @@
 import nodemailer from 'nodemailer';
 import { config } from '../config/env.config.js';
+import { logger } from './logger.js';
 
 const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST || 'smtp.gmail.com',
-    port: process.env.MAIL_PORT || 587,
-    secure: false, // true for 465, false for other ports
+    host: config.mail.host,
+    port: config.mail.port,
+    secure: config.mail.port === 465,
     auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS
+        user: config.mail.user,
+        pass: config.mail.pass
     }
 });
 
 export const sendTicketEmail = async (userEmail, eventTitle, reservationCode, quantity) => {
     try {
         const mailOptions = {
-            from: process.env.MAIL_FROM || '"Eventos API" <no-reply@eventos.com>',
+            from: config.mail.from,
             to: userEmail,
             subject: `Confirmación de inscripción: ${eventTitle}`,
             html: `
@@ -27,19 +28,17 @@ export const sendTicketEmail = async (userEmail, eventTitle, reservationCode, qu
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Email enviado a ${userEmail}: ${info.messageId}`);
+        logger.info(`Email enviado a ${userEmail}: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error(`Error enviando email a ${userEmail}:`, error);
-        // No arrojamos el error para no romper el flujo principal de creación,
-        // pero en un sistema robusto se podría reencolar o manejar de otra forma.
+        logger.warning(`Error enviando email a ${userEmail}: ${error.message}`);
     }
 };
 
 export const sendCancellationEmail = async (userEmail, eventTitle, reservationCode) => {
     try {
         const mailOptions = {
-            from: process.env.MAIL_FROM || '"Eventos API" <no-reply@eventos.com>',
+            from: config.mail.from,
             to: userEmail,
             subject: `Cancelación de inscripción: ${eventTitle}`,
             html: `
@@ -51,9 +50,9 @@ export const sendCancellationEmail = async (userEmail, eventTitle, reservationCo
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Email de cancelación enviado a ${userEmail}: ${info.messageId}`);
+        logger.info(`Email de cancelación enviado a ${userEmail}: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error(`Error enviando email de cancelación a ${userEmail}:`, error);
+        logger.warning(`Error enviando email de cancelación a ${userEmail}: ${error.message}`);
     }
 };

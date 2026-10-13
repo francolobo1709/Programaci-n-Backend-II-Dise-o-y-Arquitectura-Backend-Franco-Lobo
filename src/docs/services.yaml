@@ -1,0 +1,169 @@
+paths:
+  /api/services:
+    get:
+      summary: Lista todos los servicios con filtros y paginación
+      tags:
+        - Services
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filtrar por categoría
+        - in: query
+          name: available
+          schema:
+            type: boolean
+          description: Filtrar por disponibilidad
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Cantidad por página
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            default: createdAt
+          description: Campo para ordenar
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Dirección del ordenamiento
+      responses:
+        "200":
+          description: Listado paginado de servicios
+    post:
+      summary: Crea un nuevo servicio (Solo organizer o admin)
+      tags:
+        - Services
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+                - duration
+                - price
+                - category
+                - available
+              properties:
+                name:
+                  type: string
+                  example: Servicio de Catering Premium
+                description:
+                  type: string
+                  example: Servicio completo gastronómico para eventos
+                duration:
+                  type: integer
+                  example: 180
+                price:
+                  type: number
+                  example: 12000
+                category:
+                  type: string
+                  example: gastronomia
+                available:
+                  type: boolean
+                  example: true
+      responses:
+        "201":
+          description: Servicio creado exitosamente
+        "400":
+          description: Datos inválidos
+        "401":
+          description: No autenticado
+        "403":
+          description: No autorizado
+
+  /api/services/{sid}:
+    get:
+      summary: Obtiene un servicio por su ID
+      tags:
+        - Services
+      parameters:
+        - in: path
+          name: sid
+          required: true
+          schema:
+            type: string
+          description: ID del servicio
+      responses:
+        "200":
+          description: Detalle del servicio
+        "404":
+          description: Servicio no encontrado
+    put:
+      summary: Actualiza un servicio (Dueño del servicio o admin)
+      tags:
+        - Services
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: sid
+          required: true
+          schema:
+            type: string
+          description: ID del servicio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                duration:
+                  type: integer
+                available:
+                  type: boolean
+      responses:
+        "200":
+          description: Servicio modificado exitosamente
+        "401":
+          description: No autenticado
+        "403":
+          description: No tienes permisos para modificar este servicio ajeno
+        "404":
+          description: Servicio no encontrado
+    delete:
+      summary: Elimina un servicio (Dueño del servicio o admin)
+      tags:
+        - Services
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: sid
+          required: true
+          schema:
+            type: string
+          description: ID del servicio
+      responses:
+        "200":
+          description: Servicio eliminado exitosamente
+        "401":
+          description: No autenticado
+        "403":
+          description: No tienes permisos para eliminar este servicio ajeno
+        "404":
+          description: Servicio no encontrado

@@ -1,0 +1,90 @@
+paths:
+  /api/messages:
+    get:
+      summary: Lista todos los mensajes
+      tags:
+        - Messages
+      responses:
+        "200":
+          description: Listado de mensajes
+        "503":
+          description: Servicio no disponible (MongoDB desconectado)
+    post:
+      summary: Crea y envía un mensaje nuevo (emite evento socket.io)
+      tags:
+        - Messages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - booking
+                - sender
+                - content
+              properties:
+                booking:
+                  type: string
+                  description: ID de la reserva asociada
+                sender:
+                  type: string
+                  example: soporte@eventos.com
+                content:
+                  type: string
+                  example: Su evento ha sido confirmado con éxito.
+      responses:
+        "201":
+          description: Mensaje creado y emitido por WebSocket
+        "400":
+          description: Faltan campos requeridos
+
+  /api/messages/{mid}:
+    get:
+      summary: Obtiene un mensaje por su ID
+      tags:
+        - Messages
+      parameters:
+        - in: path
+          name: mid
+          required: true
+          schema:
+            type: string
+          description: ID del mensaje
+      responses:
+        "200":
+          description: Detalle del mensaje
+        "404":
+          description: Mensaje no encontrado
+    delete:
+      summary: Elimina un mensaje por su ID
+      tags:
+        - Messages
+      parameters:
+        - in: path
+          name: mid
+          required: true
+          schema:
+            type: string
+          description: ID del mensaje
+      responses:
+        "200":
+          description: Mensaje eliminado exitosamente
+        "404":
+          description: Mensaje no encontrado
+
+  /api/messages/booking/{bid}:
+    get:
+      summary: Obtiene todos los mensajes pertenecientes a una reserva específica
+      tags:
+        - Messages
+      parameters:
+        - in: path
+          name: bid
+          required: true
+          schema:
+            type: string
+          description: ID de la reserva
+      responses:
+        "200":
+          description: Lista de mensajes de la reserva

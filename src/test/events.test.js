@@ -2,10 +2,6 @@ import request from 'supertest';
 import { app } from '../app.js';
 import mongoose from 'mongoose';
 import { connectDB } from '../database/connection.js';
-import dns from 'node:dns';
-
-// Forzar el uso de los DNS de Google para evitar bloqueos de red con MongoDB Atlas
-dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 describe('Testing Events API', () => {
 
@@ -17,6 +13,16 @@ describe('Testing Events API', () => {
     afterAll(async () => {
         // Desconectar para que Jest pueda finalizar el proceso correctamente
         await mongoose.connection.close();
+    });
+
+    describe('GET /health', () => {
+        it('Debería retornar status 200 y el estado de salud del sistema', async () => {
+            const response = await request(app).get('/health');
+            expect(response.statusCode).toBe(200);
+            expect(response.body.status).toBe('success');
+            expect(response.body.data).toHaveProperty('uptime');
+            expect(response.body.data.database.status).toBe('connected');
+        });
     });
 
     describe('GET /api/events', () => {

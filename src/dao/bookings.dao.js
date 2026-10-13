@@ -16,7 +16,7 @@ export class BookingDAO {
     }
 
     async updateById(id, data) {
-        return BookingModel.findByIdAndUpdate(id, data, { new: true, runValidators: true })
+        return BookingModel.findByIdAndUpdate(id, data, { returnDocument: 'after', runValidators: true })
             .populate('services.service')
             .lean();
     }
@@ -29,7 +29,7 @@ export class BookingDAO {
         return BookingModel.findByIdAndUpdate(
             bookingId,
             { $push: { services: { service: serviceId, quantity } } },
-            { new: true }
+            { returnDocument: 'after' }
         ).populate('services.service').lean();
     }
 
@@ -37,7 +37,7 @@ export class BookingDAO {
         return BookingModel.findOneAndUpdate(
             { _id: bookingId, 'services.service': serviceId },
             { $set: { 'services.$.quantity': quantity } },
-            { new: true }
+            { returnDocument: 'after' }
         ).populate('services.service').lean();
     }
 
@@ -45,7 +45,7 @@ export class BookingDAO {
         return BookingModel.findByIdAndUpdate(
             bookingId,
             { $pull: { services: { service: serviceId } } },
-            { new: true }
+            { returnDocument: 'after' }
         ).populate('services.service').lean();
     }
 
@@ -53,7 +53,7 @@ export class BookingDAO {
         return BookingModel.findByIdAndUpdate(
             bookingId,
             { $set: { services: [] } },
-            { new: true }
+            { returnDocument: 'after' }
         ).lean();
     }
 }

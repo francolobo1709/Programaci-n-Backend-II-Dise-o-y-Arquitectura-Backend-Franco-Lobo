@@ -1,3 +1,21 @@
+export class BookingInputDTO {
+    constructor(data = {}) {
+        this.clientName = data.clientName;
+        this.clientEmail = data.clientEmail;
+        this.date = data.date;
+    }
+
+    toPayload() {
+        const payload = {
+            clientName: this.clientName,
+            clientEmail: this.clientEmail,
+            date: this.date
+        };
+        Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+        return payload;
+    }
+}
+
 export class BookingDTO {
     constructor(booking) {
         this.id = booking._id || booking.id;
@@ -31,3 +49,5 @@ export class BookingDTO {
         }
     }
 }
+
+export const BookingResponseDTO = BookingDTO;

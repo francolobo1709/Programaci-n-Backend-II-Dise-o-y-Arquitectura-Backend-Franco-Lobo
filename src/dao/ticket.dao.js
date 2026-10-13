@@ -15,7 +15,7 @@ export class TicketDAO {
     }
 
     async update(id, ticketData) {
-        return await TicketModel.findByIdAndUpdate(id, ticketData, { new: true });
+        return await TicketModel.findByIdAndUpdate(id, ticketData, { returnDocument: 'after' });
     }
 
     async getPaginated(filter, options) {

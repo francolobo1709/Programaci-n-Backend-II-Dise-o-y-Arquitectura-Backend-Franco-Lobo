@@ -1,6 +1,7 @@
 import { serviceService } from '../services/services.service.js';
 import { getIO } from '../config/socket.js';
 import { ServiceDTO } from '../dtos/service.dto.js';
+import { ForbiddenError } from '../errors/AppError.js';
 
 export const getServices = async (req, res, next) => {
     try {
@@ -38,7 +39,7 @@ export const updateService = async (req, res, next) => {
     try {
         const service = await serviceService.getById(req.params.sid);
         if (req.user.role === 'organizer' && service.organizer?.toString() !== req.user.id) {
-            return res.status(403).json({ status: 'error', message: 'No tenés permisos para modificar este servicio ajeno' });
+            throw new ForbiddenError('No tenés permisos para modificar este servicio ajeno');
         }
         const updated = await serviceService.update(req.params.sid, req.body);
         res.json({ status: 'success', payload: new ServiceDTO(updated) });
@@ -51,7 +52,7 @@ export const deleteService = async (req, res, next) => {
     try {
         const service = await serviceService.getById(req.params.sid);
         if (req.user.role === 'organizer' && service.organizer?.toString() !== req.user.id) {
-            return res.status(403).json({ status: 'error', message: 'No tenés permisos para eliminar este servicio ajeno' });
+            throw new ForbiddenError('No tenés permisos para eliminar este servicio ajeno');
         }
         const deleted = await serviceService.remove(req.params.sid);
         res.json({ status: 'success', payload: new ServiceDTO(deleted) });

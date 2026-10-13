@@ -1,0 +1,40 @@
+paths:
+  /health:
+    get:
+      summary: Health check del sistema (Estado de conexión, uptime y entorno)
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Sistema y base de datos saludables
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      uptime:
+                        type: integer
+                        example: 3600
+                      timestamp:
+                        type: string
+                        format: date-time
+                      environment:
+                        type: string
+                        example: development
+                      database:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: connected
+                          readyState:
+                            type: integer
+                            example: 1
+        "503":
+          description: Base de datos no conectada

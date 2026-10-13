@@ -23,26 +23,14 @@ class EventsService {
     }
 
     async getEvents(filters, options) {
-        const query = {};
-
-        if (filters.status) query.status = filters.status;
-        if (filters.category) query.category = filters.category;
-        if (filters.location) query.location = { $regex: filters.location, $options: 'i' };
-        
-        if (filters.dateFrom || filters.dateTo) {
-            query.date = {};
-            if (filters.dateFrom) query.date.$gte = new Date(filters.dateFrom);
-            if (filters.dateTo) query.date.$lte = new Date(filters.dateTo);
-        }
-
         const paginateOptions = {
             page: parseInt(options.page) || 1,
             limit: parseInt(options.limit) || 10,
-            sort: options.sort ? { [options.sort]: options.order === 'desc' ? -1 : 1 } : { createdAt: -1 },
-            populate: { path: 'organizer', select: 'first_name last_name email' }
+            sort: options.sort || 'createdAt',
+            order: options.order || 'desc'
         };
 
-        const result = await eventsRepository.getEvents(query, paginateOptions);
+        const result = await eventsRepository.getEvents(filters, paginateOptions);
 
         return {
             data: result.docs,

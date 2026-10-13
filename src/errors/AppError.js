@@ -1,14 +1,15 @@
 export class AppError extends Error {
-    constructor(message, statusCode) {
+    constructor(message, statusCode = 500, details = null) {
         super(message);
-        this.name   = this.constructor.name;
+        this.name = this.constructor.name;
         this.statusCode = statusCode;
+        this.details = details;
     }
 }
 
 export class ValidationError extends AppError {
-    constructor(message) {
-        super(message, 400);
+    constructor(message, details = null) {
+        super(message, 400, details);
     }
 }
 
@@ -19,7 +20,13 @@ export class NotFoundError extends AppError {
 }
 
 export class UnauthorizedError extends AppError {
-    constructor(message = 'No autorizado') {
+    constructor(message = 'No autenticado', statusCode = 401) {
+        super(message, statusCode);
+    }
+}
+
+export class ForbiddenError extends AppError {
+    constructor(message = 'No tienes permisos para realizar esta acción') {
         super(message, 403);
     }
 }

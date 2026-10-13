@@ -1,3 +1,27 @@
+export class ServiceInputDTO {
+    constructor(data = {}) {
+        this.name = data.name;
+        this.description = data.description;
+        this.duration = data.duration !== undefined ? Number(data.duration) : undefined;
+        this.price = data.price !== undefined ? Number(data.price) : undefined;
+        this.category = data.category;
+        this.available = data.available !== undefined ? Boolean(data.available) : undefined;
+    }
+
+    toPayload() {
+        const payload = {
+            name: this.name,
+            description: this.description,
+            duration: this.duration,
+            price: this.price,
+            category: this.category,
+            available: this.available
+        };
+        Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+        return payload;
+    }
+}
+
 export class ServiceDTO {
     constructor(service) {
         this.id = service._id || service.id;
@@ -22,3 +46,5 @@ export class ServiceDTO {
         }
     }
 }
+
+export const ServiceResponseDTO = ServiceDTO;

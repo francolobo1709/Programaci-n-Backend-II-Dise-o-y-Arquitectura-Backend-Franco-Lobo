@@ -5,6 +5,7 @@ import { initializePassport } from './config/passport.config.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpecs } from './config/swagger.config.js';
 
+import compression from 'compression';
 import eventsRouter from './routes/events.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 import servicesRouter from './routes/services.router.js';
@@ -12,11 +13,13 @@ import bookingsRouter from './routes/bookings.router.js';
 import messagesRouter from './routes/messages.router.js';
 import viewsRouter from './routes/views.router.js';
 import ticketsRouter from './routes/tickets.router.js';
+import healthRouter from './routes/health.router.js';
 
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 
+app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -24,6 +27,7 @@ app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
 
+app.use('/health', healthRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/services', servicesRouter);

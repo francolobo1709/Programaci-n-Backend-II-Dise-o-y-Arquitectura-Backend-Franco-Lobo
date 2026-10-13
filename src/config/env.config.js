@@ -18,5 +18,12 @@ export const config = {
         ? (process.env.MONGO_URL_TEST || process.env.MONGO_URL)
         : process.env.MONGO_URL,
     jwtSecret: process.env.JWT_SECRET,
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h'
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    mail: {
+        host: process.env.MAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.MAIL_PORT, 10) || 587,
+        user: process.env.MAIL_USER || '',
+        pass: process.env.MAIL_PASS || '',
+        from: process.env.MAIL_FROM || '"API Eventos" <no-reply@eventos.com>'
+    }
 };

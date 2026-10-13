@@ -2,10 +2,6 @@ import request from 'supertest';
 import { app } from '../app.js';
 import mongoose from 'mongoose';
 import { connectDB } from '../database/connection.js';
-import dns from 'node:dns';
-
-// Forzar el uso de los DNS de Google para evitar bloqueos de red con MongoDB Atlas
-dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 describe('Testing Sessions API', () => {
 

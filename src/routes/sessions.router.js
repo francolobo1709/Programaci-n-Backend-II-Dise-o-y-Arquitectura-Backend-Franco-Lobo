@@ -4,6 +4,7 @@ import { validate } from '../middlewares/validate.js';
 import { registerSchema, loginSchema } from '../validators/sessions.validators.js';
 import { requireAuth } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
+import { authRateLimiter } from '../middlewares/rateLimiter.js';
 import passport from 'passport';
 
 const router = Router();
@@ -13,7 +14,7 @@ const authenticateRegister = (req, res, next) => {
     passport.authenticate('register', { session: false }, (err, user, info) => {
         if (err) return next(err);
         if (!user) {
-            return res.status(409).json({ status: 'error', error: info?.message || 'Error en registro' });
+            return res.status(409).json({ status: 'error', message: info?.message || 'Error en registro' });
         }
         req.user = user;
         next();
@@ -32,11 +33,11 @@ const authenticateLogin = (req, res, next) => {
     })(req, res, next);
 };
 
-// POST /api/sessions/register
-router.post('/register', validate(registerSchema), authenticateRegister, SessionsController.register);
+// POST /api/sessions/register (Protegido con Rate Limiting)
+router.post('/register', authRateLimiter, validate(registerSchema), authenticateRegister, SessionsController.register);
 
-// POST /api/sessions/login
-router.post('/login', validate(loginSchema), authenticateLogin, SessionsController.login);
+// POST /api/sessions/login (Protegido con Rate Limiting)
+router.post('/login', authRateLimiter, validate(loginSchema), authenticateLogin, SessionsController.login);
 
 // GET /api/sessions/current
 router.get('/current', requireAuth, SessionsController.current);

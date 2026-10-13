@@ -23,7 +23,7 @@ export class ServiceDAO {
     }
 
     async updateById(id, data) {
-        return ServiceModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).lean();
+        return ServiceModel.findByIdAndUpdate(id, data, { returnDocument: 'after', runValidators: true }).lean();
     }
 
     async deleteById(id) {

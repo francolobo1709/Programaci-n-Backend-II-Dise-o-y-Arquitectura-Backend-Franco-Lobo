@@ -1,5 +1,5 @@
 import { generateToken } from '../utils/jwt.utils.js';
-import { UsersRepository } from '../repositories/users.repository.js';
+import { usersService } from '../services/users.service.js';
 import { UserDTO } from '../dtos/user.dto.js';
 
 export class SessionsController {
@@ -59,7 +59,7 @@ export class SessionsController {
 
     static async getAllUsers(req, res, next) {
         try {
-            const users = await UsersRepository.findAll();
+            const users = await usersService.getAllUsers();
             const usersDto = users.map(user => new UserDTO(user));
             res.status(200).json({
                 status: 'success',

@@ -10,21 +10,40 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - first_name
+                - last_name
+                - email
+                - password
               properties:
                 first_name:
                   type: string
+                  example: Juan
                 last_name:
                   type: string
+                  example: Pérez
                 email:
                   type: string
+                  format: email
+                  example: juan@mail.com
+                age:
+                  type: integer
+                  example: 28
                 password:
                   type: string
+                  format: password
+                  example: Secreta123
       responses:
         "201":
-          description: Usuario registrado exitosamente
+          description: Usuario registrado exitosamente (Rol 'user' por defecto)
+        "400":
+          description: Faltan campos obligatorios o formato inválido
+        "409":
+          description: El email ya está registrado
+
   /api/sessions/login:
     post:
-      summary: Inicia sesión
+      summary: Inicia sesión (establece cookie currentUser HttpOnly con JWT)
       tags:
         - Sessions
       requestBody:
@@ -33,21 +52,64 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
+                  example: juan@mail.com
                 password:
                   type: string
+                  example: Secreta123
       responses:
         "200":
-          description: Sesión iniciada
+          description: Sesión iniciada correctamente
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: currentUser=abcde123...; HttpOnly; Path=/
+        "401":
+          description: Credenciales inválidas
+
   /api/sessions/current:
     get:
-      summary: Obtiene el usuario actual logueado
+      summary: Obtiene los datos del usuario autenticado actual
       tags:
         - Sessions
+      security:
+        - cookieAuth: []
       responses:
         "200":
-          description: Datos del usuario actual
+          description: Datos seguros del usuario logueado (mediante DTO)
         "401":
           description: No autenticado
+
+  /api/sessions/logout:
+    post:
+      summary: Cierra la sesión activa (limpia la cookie currentUser)
+      tags:
+        - Sessions
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Logout exitoso
+        "401":
+          description: No autenticado
+
+  /api/sessions/users:
+    get:
+      summary: Obtiene todos los usuarios registrados (Solo Administrador)
+      tags:
+        - Sessions
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Lista de usuarios (sin passwords ni datos sensibles)
+        "401":
+          description: No autenticado
+        "403":
+          description: Permisos insuficientes (Requiere rol 'admin')

@@ -53,4 +53,18 @@ const prodLogger = winston.createLogger({
     ]
 });
 
-export const logger = config.env === 'production' ? prodLogger : devLogger;
+const testLogger = winston.createLogger({
+    levels: customLevelsOptions.levels,
+    transports: [
+        new winston.transports.Console({
+            level: 'error',
+            silent: true
+        })
+    ]
+});
+
+export const logger = config.env === 'production'
+    ? prodLogger
+    : config.env === 'test'
+        ? testLogger
+        : devLogger;
