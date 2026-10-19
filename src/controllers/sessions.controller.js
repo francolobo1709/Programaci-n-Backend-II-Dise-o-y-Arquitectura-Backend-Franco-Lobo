@@ -27,7 +27,9 @@ export class SessionsController {
 
             res.status(200).json({
                 status: 'success',
-                message: 'Login correcto'
+                message: 'Login correcto',
+                token,
+                payload: new UserDTO(userPayload)
             });
         } catch (error) {
             next(error);

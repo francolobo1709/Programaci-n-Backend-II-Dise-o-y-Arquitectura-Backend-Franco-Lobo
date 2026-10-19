@@ -31,8 +31,8 @@ export const getEvents = async (req, res, next) => {
         };
 
         const result = await eventsService.getEvents(filters, options);
-        result.data = result.data.map(event => new EventDTO(event));
-        res.status(200).json({ status: 'success', ...result });
+        result.data = result.data.map(event => new EventResponseDTO(event));
+        res.status(200).json({ status: 'success', ...result, payload: result.data });
     } catch (error) {
         next(error);
     }
@@ -41,7 +41,8 @@ export const getEvents = async (req, res, next) => {
 export const getEventById = async (req, res, next) => {
     try {
         const event = await eventsService.getEventById(req.params.id);
-        res.status(200).json({ status: 'success', data: new EventDTO(event) });
+        const eventDto = new EventResponseDTO(event);
+        res.status(200).json({ status: 'success', data: eventDto, payload: eventDto });
     } catch (error) {
         next(error);
     }

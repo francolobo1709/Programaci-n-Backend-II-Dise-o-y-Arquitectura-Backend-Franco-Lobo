@@ -69,7 +69,8 @@ export const ticketsService = {
         if (!event) throw new NotFoundError(eventId, 'Evento');
 
         // Solo admin o el organizador dueño del evento pueden ver sus tickets
-        if (userRole !== 'admin' && String(event.organizer) !== String(organizerId)) {
+        const eventOrganizerId = event.organizer?._id ? event.organizer._id.toString() : event.organizer?.toString();
+        if (userRole !== 'admin' && eventOrganizerId !== String(organizerId)) {
             throw new UnauthorizedError('No tienes permisos para ver los tickets de este evento ajeno');
         }
 

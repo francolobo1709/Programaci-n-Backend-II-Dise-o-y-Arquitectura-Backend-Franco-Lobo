@@ -32,6 +32,7 @@ paths:
         - Tickets
       security:
         - cookieAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: tid
@@ -48,3 +49,71 @@ paths:
           description: No autenticado
         "404":
           description: Ticket no encontrado
+
+  /api/events/{id}/tickets:
+    post:
+      summary: Inscribe / Compra tickets para un evento (Cliente autenticado)
+      tags:
+        - Tickets
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento a inscribirse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  example: 1
+                  description: Cantidad de cupos solicitados
+      responses:
+        "201":
+          description: Inscripción exitosa y ticket generado con código de reserva
+        "400":
+          description: Cupos agotados o evento no disponible
+        "401":
+          description: No autenticado
+        "409":
+          description: El usuario ya posee un ticket activo para este evento
+
+    get:
+      summary: Consulta la lista de inscriptos y tickets de un evento (Organizador o Admin)
+      tags:
+        - Tickets
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Listado paginado de tickets del evento
+        "401":
+          description: No autenticado o sin permisos de organizador
+        "404":
+          description: Evento no encontrado

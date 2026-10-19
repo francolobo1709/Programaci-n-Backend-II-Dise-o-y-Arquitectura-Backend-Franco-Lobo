@@ -1,15 +1,72 @@
 {
   "info": {
-    "name": "Programación Backend II - API",
-    "description": "Colección de endpoints para el proyecto de Diseño y Arquitectura Backend",
+    "_postman_id": "e5a31a78-22fb-4c74-bf72-882d90f2be9b",
+    "name": "Events API - Backend II (Final Project)",
+    "description": "Colección oficial, secuencial y automatizada para evaluar la API REST de Eventos, Tickets, Servicios y Bookings. Incluye scripts de prueba automatizados y propagación de variables entre requests.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "organizerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ticketId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "serviceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "messageId",
+      "value": "",
+      "type": "string"
+    }
+  ],
   "item": [
     {
-      "name": "Sessions",
+      "name": "01 - Auth & Sessions",
+      "description": "Registro e inicio de sesión de Organizador y Usuario Cliente con almacenamiento automático de JWT tokens.",
       "item": [
         {
-          "name": "Register",
+          "name": "1.1 Register Organizer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 or 409 (already registered)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -20,7 +77,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john@example.com\",\n    \"age\": 30,\n    \"password\": \"password123\"\n}"
+              "raw": "{\n    \"first_name\": \"Organizador\",\n    \"last_name\": \"Master\",\n    \"email\": \"organizador@events.com\",\n    \"password\": \"password123\",\n    \"role\": \"organizer\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/sessions/register",
@@ -36,7 +93,24 @@
           }
         },
         {
-          "name": "Login",
+          "name": "1.2 Login Organizer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('organizerToken', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -47,7 +121,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
+              "raw": "{\n    \"email\": \"organizador@events.com\",\n    \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/sessions/login",
@@ -63,9 +137,116 @@
           }
         },
         {
-          "name": "Current User",
+          "name": "1.3 Register Client (User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 or 409 (already registered)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"Cliente\",\n    \"last_name\": \"Asistente\",\n    \"email\": \"cliente@events.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Login Client (User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('userToken', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"cliente@events.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sessions/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sessions",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.5 Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns authenticated user profile', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.payload).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/sessions/current",
               "host": [
@@ -78,37 +259,219 @@
               ]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "02 - Events",
+      "description": "Gestión de eventos: Creación, consulta paginada, actualización y publicación.",
+      "item": [
         {
-          "name": "Logout",
+          "name": "2.1 Create Event (Organizer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "var eventId = jsonData.payload?.id || jsonData.data?.id;",
+                  "if (eventId) {",
+                  "    pm.collectionVariables.set('eventId', eventId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Conferencia Internacional de Arquitectura Backend\",\n    \"description\": \"Gran conferencia sobre microservicios, Node.js y arquitectura en capas.\",\n    \"category\": \"tecnologia\",\n    \"date\": \"2028-11-25T18:00:00.000Z\",\n    \"location\": \"Auditorio Metropolitano\",\n    \"capacity\": 50,\n    \"price\": 2500\n}"
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/sessions/logout",
+              "raw": "{{baseUrl}}/api/events",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
-                "sessions",
-                "logout"
+                "events"
               ]
             }
           }
         },
         {
-          "name": "Get All Users (Admin)",
+          "name": "2.2 Publish Event Status (Organizer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"published\"\n}"
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/sessions/users",
+              "raw": "{{baseUrl}}/api/events/{{eventId}}/status",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
-                "sessions",
-                "users"
+                "events",
+                "{{eventId}}",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Get all events (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.status).to.eql('success');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Get event by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.5 Update Event (Organizer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Conferencia Internacional de Backend - Edición Especial\",\n    \"capacity\": 60\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
               ]
             }
           }
@@ -116,148 +479,42 @@
       ]
     },
     {
-      "name": "Events",
+      "name": "03 - Tickets & Cupos",
+      "description": "Flujo estrella del proyecto: Inscripción con control de cupos en tiempo real, prevención de duplicados, consulta de inscriptos y cancelación.",
       "item": [
         {
-          "name": "Get all events",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "events"
-              ]
+          "name": "3.1 Comprar / Inscribir Ticket al Evento (Client)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "var ticketId = jsonData.payload?.id || jsonData.data?.id;",
+                  "if (ticketId) {",
+                  "    pm.collectionVariables.set('ticketId', ticketId);",
+                  "}",
+                  "pm.test('Ticket contains reservation code', function () {",
+                  "    pm.expect(jsonData.payload).to.have.property('reservationCode');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
-        },
-        {
-          "name": "Get event by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/events/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "events",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Event",
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Event Name\",\n    \"description\": \"Event description\",\n    \"date\": \"2024-12-31\",\n    \"location\": \"Event location\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "events"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Event",
-          "request": {
-            "method": "PUT",
-            "header": [
+              },
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Updated Event Name\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/events/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "events",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Change Event Status",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"status\": \"active\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/events/:id/status",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "events",
-                ":id",
-                "status"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Ticket for Event",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
               }
             ],
             "body": {
@@ -265,58 +522,44 @@
               "raw": "{\n    \"quantity\": 2\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/events/:id/tickets",
+              "raw": "{{baseUrl}}/api/events/{{eventId}}/tickets",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "events",
-                ":id",
+                "{{eventId}}",
                 "tickets"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
               ]
             }
           }
         },
         {
-          "name": "Get Tickets of Event",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/events/:id/tickets",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "events",
-                ":id",
-                "tickets"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
-              ]
+          "name": "3.2 Ver Mis Tickets (Client)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(Array.isArray(jsonData.payload.docs)).to.be.true;"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Tickets",
-      "item": [
-        {
-          "name": "Get My Tickets",
+          ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/tickets/my-tickets",
               "host": [
@@ -331,25 +574,79 @@
           }
         },
         {
-          "name": "Cancel Ticket",
+          "name": "3.3 Ver Inscriptos al Evento (Organizer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(Array.isArray(jsonData.payload.docs)).to.be.true;"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}",
+                "tickets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.4 Cancelar Ticket / Liberar Cupo (Client)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.payload.status).to.eql('cancelled');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
             "url": {
-              "raw": "{{baseUrl}}/api/tickets/:tid/cancel",
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/cancel",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "tickets",
-                ":tid",
+                "{{ticketId}}",
                 "cancel"
-              ],
-              "variable": [
-                {
-                  "key": "tid",
-                  "value": ""
-                }
               ]
             }
           }
@@ -357,60 +654,44 @@
       ]
     },
     {
-      "name": "Services",
+      "name": "04 - Services",
+      "description": "Catálogo de servicios complementarios para eventos.",
       "item": [
         {
-          "name": "Get all services",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/services",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "services"
-              ]
+          "name": "4.1 Create Service (Organizer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "var serviceId = jsonData.payload?.id || jsonData.data?.id || jsonData.payload?._id;",
+                  "if (serviceId) {",
+                  "    pm.collectionVariables.set('serviceId', serviceId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
-        },
-        {
-          "name": "Get service by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/services/:sid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "services",
-                ":sid"
-              ],
-              "variable": [
-                {
-                  "key": "sid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Service",
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizerToken}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Service Name\",\n    \"price\": 100\n}"
+              "raw": "{\n    \"name\": \"Servicio de Catering Premium\",\n    \"description\": \"Coffee break completo para conferencias y capacitaciones.\",\n    \"duration\": 180,\n    \"price\": 1200,\n    \"category\": \"gastronomia\",\n    \"available\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/services",
@@ -425,265 +706,116 @@
           }
         },
         {
-          "name": "Update Service",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+          "name": "4.2 Get all services",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"price\": 150\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/services/:sid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "services",
-                ":sid"
-              ],
-              "variable": [
-                {
-                  "key": "sid",
-                  "value": ""
-                }
-              ]
             }
-          }
-        },
-        {
-          "name": "Delete Service",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/services/:sid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "services",
-                ":sid"
-              ],
-              "variable": [
-                {
-                  "key": "sid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Bookings",
-      "item": [
-        {
-          "name": "Get all bookings",
+          ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/bookings",
+              "raw": "{{baseUrl}}/api/services?page=1&limit=5",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
-                "bookings"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get booking by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings/:bid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                ":bid"
-              ],
-              "variable": [
-                {
-                  "key": "bid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Booking",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"event\": \"eventId\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Booking",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"status\": \"confirmed\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings/:bid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                ":bid"
-              ],
-              "variable": [
-                {
-                  "key": "bid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Delete Booking",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings/:bid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                ":bid"
-              ],
-              "variable": [
-                {
-                  "key": "bid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Add Service to Booking",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings/:bid/services/:sid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                ":bid",
-                "services",
-                ":sid"
-              ],
-              "variable": [
-                {
-                  "key": "bid",
-                  "value": ""
-                },
-                {
-                  "key": "sid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Remove Service from Booking",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings/:bid/services/:sid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                ":bid",
-                "services",
-                ":sid"
-              ],
-              "variable": [
-                {
-                  "key": "bid",
-                  "value": ""
-                },
-                {
-                  "key": "sid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Clear Booking Services",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/bookings/:bid/services",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                ":bid",
                 "services"
               ],
-              "variable": [
+              "query": [
                 {
-                  "key": "bid",
-                  "value": ""
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
                 }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.3 Get service by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/services/{{serviceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services",
+                "{{serviceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.4 Update Service (Organizer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"price\": 1350\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/services/{{serviceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "services",
+                "{{serviceId}}"
               ]
             }
           }
@@ -691,12 +823,194 @@
       ]
     },
     {
-      "name": "Messages",
+      "name": "05 - Bookings",
+      "description": "Reservas de servicios para eventos corporativos o particulares.",
       "item": [
         {
-          "name": "Get all messages",
+          "name": "5.1 Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "var bookingId = jsonData.id || jsonData._id || jsonData.payload?.id;",
+                  "if (bookingId) {",
+                  "    pm.collectionVariables.set('bookingId', bookingId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"clientName\": \"Carlos Gómez\",\n    \"clientEmail\": \"carlos.gomez@gmail.com\",\n    \"date\": \"2028-12-20T10:00:00.000Z\",\n    \"status\": \"pending\",\n    \"services\": [\n        {\n            \"service\": \"{{serviceId}}\",\n            \"quantity\": 1\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.2 Get all bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.3 Get booking by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.4 Add Service to Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/services/{{serviceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}",
+                "services",
+                "{{serviceId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Messages",
+      "description": "Mensajería vinculada a las reservas con soporte para Socket.io.",
+      "item": [
+        {
+          "name": "6.1 Create Message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "var messageId = jsonData.id || jsonData._id;",
+                  "if (messageId) {",
+                  "    pm.collectionVariables.set('messageId', messageId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"booking\": \"{{bookingId}}\",\n    \"sender\": \"Carlos Gómez\",\n    \"content\": \"Hola, ¿podrían confirmar si el menú incluye opciones vegetarianas?\"\n}"
+            },
             "url": {
               "raw": "{{baseUrl}}/api/messages",
               "host": [
@@ -710,34 +1024,86 @@
           }
         },
         {
-          "name": "Get message by ID",
+          "name": "6.2 Get all messages",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/messages/:mid",
+              "raw": "{{baseUrl}}/api/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.3 Get message by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/{{messageId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "messages",
-                ":mid"
-              ],
-              "variable": [
-                {
-                  "key": "mid",
-                  "value": ""
-                }
+                "{{messageId}}"
               ]
             }
           }
         },
         {
-          "name": "Get messages by booking",
+          "name": "6.4 Get messages by booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/messages/booking/:bid",
+              "raw": "{{baseUrl}}/api/messages/booking/{{bookingId}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -745,62 +1111,7 @@
                 "api",
                 "messages",
                 "booking",
-                ":bid"
-              ],
-              "variable": [
-                {
-                  "key": "bid",
-                  "value": ""
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Message",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"message\": \"Hello, this is a message!\",\n    \"bookingId\": \"someBookingId\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/messages",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "messages"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Delete Message",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/messages/:mid",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "messages",
-                ":mid"
-              ],
-              "variable": [
-                {
-                  "key": "mid",
-                  "value": ""
-                }
+                "{{bookingId}}"
               ]
             }
           }
@@ -808,12 +1119,59 @@
       ]
     },
     {
-      "name": "Views",
+      "name": "07 - Health & Views",
+      "description": "Monitoreo del estado del servicio y vistas renderizadas con Handlebars.",
       "item": [
         {
-          "name": "Services View",
+          "name": "7.1 Health Check (MongoDB & Uptime)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.status).to.eql('success');",
+                  "pm.expect(jsonData.data.database.status).to.eql('connected');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.2 Services View (Handlebars)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/views/services",
               "host": [
@@ -827,9 +1185,23 @@
           }
         },
         {
-          "name": "Availability View",
+          "name": "7.3 Availability View (Handlebars)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/views/availability",
               "host": [
@@ -843,13 +1215,6 @@
           }
         }
       ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8080",
-      "type": "string"
     }
   ]
 }

@@ -218,11 +218,15 @@ La API cuenta con documentación interactiva con **todos los endpoints documenta
 - Con el servidor en ejecución, ingresá desde el navegador a:
   👉 **http://localhost:8080/api-docs**
 
-### 2. Colección de Postman
+### 2. Colección de Postman (Totalmente Automatizada y Ordenada)
 En la raíz del repositorio se encuentra el archivo **`postman_collection.json`** listo para importar en Postman o Thunder Client:
 1. Abrí Postman y hacé clic en **Import**.
 2. Arrastrá el archivo `postman_collection.json`.
-3. La colección incluye carpetas organizadas por entidad, requests de prueba con cuerpos preconfigurados y la variable `{{baseUrl}}` apuntando a `http://localhost:8080`.
+3. **Ejecución 100% Automatizada (Postman Runner):**
+   - Podés correr la colección completa con el **Runner de Postman** en un solo clic.
+   - Las carpetas están estructuradas numéricamente (`01 - Auth`, `02 - Events`, `03 - Tickets`, `04 - Services`, `05 - Bookings`, `06 - Messages`, `07 - Health`).
+   - Cada request cuenta con **Tests automáticos (`pm.test`)** y scripts que capturan y propagan automáticamente los tokens JWT (`{{organizerToken}}`, `{{userToken}}`) y los IDs generados (`{{eventId}}`, `{{ticketId}}`, `{{serviceId}}`, `{{bookingId}}`), asegurando que todos los tests compilen y pasen con status `200/201`.
+   - Soporta autenticación híbrida transparente: funciona tanto por **Cookie** como mediante el header **`Authorization: Bearer <token>`**.
 
 ---
 

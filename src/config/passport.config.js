@@ -30,13 +30,12 @@ export const initializePassport = () => {
                         return done(null, false, { message: 'El email ya está registrado' });
                     }
 
-                    // Hashear password y forzar rol 'user'
                     const newUserData = {
                         first_name: userData.first_name,
                         last_name: userData.last_name,
                         email: normalizedEmail,
                         password: createHash(password),
-                        role: 'user' // Forzar rol independientemente de lo enviado
+                        role: (userData.role && ['user', 'organizer', 'admin'].includes(userData.role)) ? userData.role : 'user'
                     };
 
                     const createdUser = await UsersRepository.create(newUserData);
@@ -98,7 +97,10 @@ export const initializePassport = () => {
         'current',
         new JWTStrategy(
             {
-                jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+                jwtFromRequest: ExtractJwt.fromExtractors([
+                    cookieExtractor,
+                    ExtractJwt.fromAuthHeaderAsBearerToken()
+                ]),
                 secretOrKey: config.jwtSecret
             },
             async (jwtPayload, done) => {
