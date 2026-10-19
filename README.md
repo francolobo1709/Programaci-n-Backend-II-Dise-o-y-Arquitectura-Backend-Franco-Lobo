@@ -260,6 +260,23 @@ El sistema soporta 3 roles de usuario:
 - **`organizer`**: Proveedor/Organizador. Puede crear eventos y servicios, modificar y cambiar el estado de sus propios eventos, y consultar la lista de inscriptos a sus eventos.
 - **`admin`**: Administrador total. Tiene acceso a modificar cualquier recurso y acceder a `/api/sessions/users`.
 
+### 👤 Usuarios de Prueba Preconfigurados (o cómo crearlos)
+
+Para evaluar inmediatamente todos los roles y flujos sin necesidad de crear usuarios manualmente, el sistema incluye un comando de inicialización (`seed`):
+
+```bash
+npm run seed
+```
+
+| Rol | Email | Contraseña | Capacidades en la API |
+| :--- | :--- | :--- | :--- |
+| **`organizer`** | `organizador@events.com` | `password123` | Crear/modificar eventos, publicar eventos, consultar inscriptos a sus eventos, gestionar servicios. |
+| **`user`** | `cliente@events.com` | `password123` | Consultar eventos públicos, inscribirse a eventos (`POST /api/events/:eid/tickets`), ver y cancelar tickets. |
+| **`admin`** | `admin@events.com` | `admin123` | Acceso global: modificar/cancelar cualquier evento, listar todos los usuarios en `/api/sessions/users`. |
+
+> [!NOTE]
+> Por políticas de seguridad y criterio estricto de evaluación, el endpoint público `POST /api/sessions/register` **nunca acepta el campo `role` desde el body** y siempre asigna por defecto el rol `user`. Los roles con privilegios (`organizer`, `admin`) se inicializan mediante el script de seed o directamente en la base de datos.
+
 ---
 
 ## 🐳 Docker & CI/CD

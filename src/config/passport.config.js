@@ -35,7 +35,7 @@ export const initializePassport = () => {
                         last_name: userData.last_name,
                         email: normalizedEmail,
                         password: createHash(password),
-                        role: (userData.role && ['user', 'organizer', 'admin'].includes(userData.role)) ? userData.role : 'user'
+                        role: 'user' // Criterio de aceptación: Registro público no acepta role desde el body
                     };
 
                     const createdUser = await UsersRepository.create(newUserData);

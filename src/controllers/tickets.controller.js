@@ -15,7 +15,7 @@ export const getMyTickets = async (req, res, next) => {
 
 export const cancelTicket = async (req, res, next) => {
     try {
-        const ticketId = req.params.tid;
+        const ticketId = req.params.tid || req.params.id;
         const userId = req.user.id;
         const userRole = req.user.role;
         const result = await ticketsService.cancelTicket(ticketId, userId, userRole);

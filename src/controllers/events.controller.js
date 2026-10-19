@@ -71,7 +71,7 @@ export const changeEventStatus = async (req, res, next) => {
 
 export const createTicket = async (req, res, next) => {
     try {
-        const eventId = req.params.id;
+        const eventId = req.params.eid || req.params.id;
         const userId = req.user.id;
         const userEmail = req.user.email;
         const { quantity = 1 } = req.body;
@@ -85,7 +85,7 @@ export const createTicket = async (req, res, next) => {
 
 export const getEventTickets = async (req, res, next) => {
     try {
-        const eventId = req.params.id;
+        const eventId = req.params.eid || req.params.id;
         const organizerId = req.user.id;
         const userRole = req.user.role;
         const { page = 1, limit = 10 } = req.query;

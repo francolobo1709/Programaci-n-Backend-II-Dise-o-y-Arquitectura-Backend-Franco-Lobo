@@ -20,10 +20,6 @@ export const registerSchema = z.object({
         required_error: 'password es obligatorio',
         invalid_type_error: 'password debe ser un texto',
     }).min(6, 'password debe tener al menos 6 caracteres'),
-
-    role: z.enum(['user', 'organizer', 'admin'], {
-        invalid_type_error: 'El rol debe ser user, organizer o admin'
-    }).optional(),
 });
 
 export const loginSchema = z.object({
