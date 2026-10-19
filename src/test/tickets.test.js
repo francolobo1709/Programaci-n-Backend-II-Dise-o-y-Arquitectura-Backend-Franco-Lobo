@@ -22,7 +22,7 @@ describe('Testing Tickets & Cupos Flow (Isolated)', () => {
         };
 
         await request(app).post('/api/sessions/register').send(organizerData);
-        
+
         // Actualizamos rol a organizer en la BD
         await mongoose.connection.collection('users').updateOne(
             { email: organizerData.email },
